@@ -1,0 +1,4 @@
+BackboneWorkshop
+================
+
+Backbone.js Workshop
