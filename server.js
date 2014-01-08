@@ -29,16 +29,16 @@ THE SOFTWARE.
 var express = require('express');
 var app = express();
 
-var restaurantService = require('./restaurant.js');
-var reservationService = require('./reservation.js');
+var restaurantService = require('./server/restaurant.js');
+var reservationService = require('./server/reservation.js');
 
 app.use(express.bodyParser());
 
 app.get('/', function(req, res){
-    res.sendfile('./test.html');
+    res.sendfile('./webapp/test.html');
 });
-app.get(/\/(\w+)\.js/, function(req, res) {
-    res.sendfile('./' + req.params[0] + '.js');
+app.get(/\/(\S+)\.js/, function(req, res) {
+    res.sendfile('./webapp/libs/' + req.params[0] + '.js');
 });
 
 app.get('/restaurants', restaurantService.getRestaurants);
