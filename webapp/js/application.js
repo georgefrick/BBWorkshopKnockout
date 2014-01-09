@@ -30,10 +30,10 @@
     "use strict";
 
     $(document).ready(function(){
-    var foo = new RestaurantModule.RestaurantView();
+    var restaurantView = new RestaurantModule.RestaurantView();
     var content = $("#restaurant-list-main");
     content.empty();
-    content.append(foo.render().el);
+    content.append(restaurantView.render().el);
     });
 
 })();
