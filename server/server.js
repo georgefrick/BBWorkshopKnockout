@@ -29,34 +29,67 @@ THE SOFTWARE.
 var express = require('express');
 var app = express();
 
-var restaurantService = require('./server/restaurant.js');
-var reservationService = require('./server/reservation.js');
+var restaurantService = require('./restaurantService.js');
+var reservationService = require('./reservationService.js');
+
+// parse command line options
+var opts = require('stdio').getopt({
+    'port': {key: 'p', args: 1, description: 'HTTP Listener Bind Port'}
+});
 
 app.use(express.bodyParser());
 
-app.get('/', function(req, res){
-    res.sendfile('./webapp/test.html');
-});
-app.get(/\/(\S+)\.js/, function(req, res) {
-    res.sendfile('./webapp/libs/' + req.params[0] + '.js');
+// root
+app.get('/', function(req, res) {
+    res.sendfile('./webapp/index.html');
 });
 
+// redirect to root
+app.get('/index.html', function(req, res) {
+    res.redirect('/');
+});
+
+// setup static js/css/lib file serving
+app.use(express.static(__dirname + '/webapp'));
+// app.get(/\/(\S+)\.js/, function(req, res) {
+//     res.sendfile('./webapp/libs/' + req.params[0] + '.js');
+// });
+
+// get all restaurants
 app.get('/restaurants', restaurantService.getRestaurants);
+
+// get one restaurant
 app.get('/restaurants/:id', restaurantService.getRestaurants);
 
+// create a new restaurant
 app.put('/restaurants', restaurantService.saveRestaurant);
+
+// update a restaurant
 app.put('/restaurants/:id', restaurantService.saveRestaurant);
 
+// remove a restaurant
 app.delete('/restaurants/:id', restaurantService.deleteRestaurant);
 
+// get reservations for a restaurant
 app.get('/restaurants/:id/reservations', restaurantService.getReservations);
 
+// get a single reservation
 app.get('/reservations/:id', reservationService.getReservations);
 
+// create a new reservation
 app.put('/reservations', reservationService.saveReservation);
+
+// update a reservation
 app.put('/reservations/:id', reservationService.saveReservation);
 
+// delete a reservation
 app.delete('/reservations/:id', reservationService.deleteReservation);
 
-app.listen(9000);
-console.log('Listening on port 9000');
+// start the server
+var port = opts.port;
+if (port === undefined) {
+    console.log('Port not specified.  Defaulting to 9000');
+    port = 9000;
+}
+app.listen(port);
+console.log('Listening on port ' + port);
