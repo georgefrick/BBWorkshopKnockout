@@ -1,3 +1,3 @@
 #!/bin/bash
-npm install
+sudo npm install
 node server/server --port 9000
