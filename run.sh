@@ -1,4 +1,4 @@
 #!/bin/bash
 sudo npm install
-handlebars webapp/template/*.handlebars -f webapp/js/precompiled-templates.js
+./node_modules/handlebars/bin/handlebars webapp/template/*.handlebars -f webapp/js/precompiled-templates.js
 node server/server --port 9000
