@@ -1,0 +1,15 @@
+<h4>There are {{ count }} restaurants.</h4>
+<div class='restaurantList'>
+     <ol>
+         {{#each restaurant}}
+         <li>
+
+         <div class='restaurant'>
+             <div class="title">{{name}}</div>
+             <div class="wide">{{address}}</div>
+         </div>
+             <br>
+         </li>
+         {{/each}}
+     </ol>
+</div>

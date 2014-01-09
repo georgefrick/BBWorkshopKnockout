@@ -30,18 +30,39 @@
     "use strict";
 
     var RestaurantModule = {};
+    window.RestaurantModule = RestaurantModule;
 
     RestaurantModule.Restaurant = Backbone.Model.extend({
-    urlRoot: "/restaurants"
+        defaults: {
+            name: "undefined",
+            location: ""
+        },
+
+        urlRoot: "/restaurants"
     });
 
     RestaurantModule.RestaurantList = Backbone.Collection.extend({
         model:RestaurantModule.Restaurant,
-        urlRoot:"/restaurants"
-    })
+        url:"/restaurants",
+        parse: function(response){
+            return response.data;
+        }
+    });
 
     RestaurantModule.RestaurantView = Backbone.View.extend({
-
+        initialize: function () {
+            this.template = Handlebars.templates.restaurantList;
+            this.restaurants = new RestaurantModule.RestaurantList();
+            this.restaurants.on("all",this.render, this);
+            this.restaurants.fetch();
+        },
+        render: function () {
+            this.$el.html(this.template({count:this.count(),restaurant:this.restaurants.toJSON()}));
+            return this;
+        },
+        count : function() {
+            return this.restaurants.length;
+        }
     });
 
     return RestaurantModule;
