@@ -46,10 +46,7 @@ app.get('/index.html', function(req, res) {
 });
 
 // setup static js/css/lib file serving
-app.use(express.static(__dirname + '/webapp'));
-// app.get(/\/(\S+)\.js/, function(req, res) {
-//     res.sendfile('./webapp/libs/' + req.params[0] + '.js');
-// });
+app.use(express.static(__dirname + '/../webapp'));
 
 // get all restaurants
 app.get('/restaurants', restaurantService.getRestaurants);
