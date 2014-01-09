@@ -1,3 +1,4 @@
-npm install
-handlebars webapp/template/*.handlebars -f webapp/js/precompiled-templates.js
-node server/server --port 9000
+echo off
+call npm install
+call handlebars webapp/template/*.handlebars -f webapp/js/precompiled-templates.js
+call node server/server --port 9000
