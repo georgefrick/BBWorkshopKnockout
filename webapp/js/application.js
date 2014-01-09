@@ -29,5 +29,11 @@
 (function(){
     "use strict";
 
+    $(document).ready(function(){
+    var foo = new RestaurantModule.RestaurantView();
+    var content = $("#restaurant-list-main");
+    content.empty();
+    content.append(foo.render().el);
+    });
 
 })();
