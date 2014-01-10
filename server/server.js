@@ -25,6 +25,8 @@
 var express = require('express');
 var app = express();
 
+var _ = require('underscore');
+
 var restaurantService = require('./restaurantService.js');
 var reservationService = require('./reservationService.js');
 
@@ -33,50 +35,59 @@ var opts = require('stdio').getopt({
     'port': {key: 'p', args: 1, description: 'HTTP Listener Bind Port'}
 });
 
+// application routes
+// verb -> path -> function(s)
+var baseRoutes = {
+    'get': {
+        '/': function(req, res) {
+            res.sendfile('/.webapp/index.html');
+        },
+        '/index.html': function(req, res) {
+            res.redirect('/');
+        }
+    }
+};
+var restaurantServiceRoutes = {
+    'get': {
+        '/restaurants': restaurantService.getRestaurants,
+        '/restaurants/:id': restaurantService.getRestaurants,
+        '/restaurants/:id/reservations': restaurantService.getReservations
+    },
+    'put': {
+        '/restaurants': restaurantService.saveRestaurant,
+        '/restaurants/:id': restaurantService.saveRestaurant
+    },
+    'delete': {
+        '/restaurants/:id': restaurantService.deleteRestaurant
+    }
+};
+var reservationServiceRoutes = {
+    'get': {
+        '/reservations/:id': reservationService.getReservations
+    },
+    'put': {
+        '/reservations': reservationService.saveReservation,
+        '/reservations/:id': reservationService.saveReservation
+    },
+    'delete': {
+        '/reservations/:id': reservationService.deleteReservation
+    }
+};
+
 app.use(express.bodyParser());
-
-// root
-app.get('/', function(req, res) {
-    res.sendfile('./webapp/index.html');
-});
-
-// redirect to root
-app.get('/index.html', function(req, res) {
-    res.redirect('/');
-});
-
-// setup static js/css/lib file serving
 app.use(express.static(__dirname + '/../webapp'));
 
-// get all restaurants
-app.get('/restaurants', restaurantService.getRestaurants);
-
-// get one restaurant
-app.get('/restaurants/:id', restaurantService.getRestaurants);
-
-// create a new restaurant
-app.put('/restaurants', restaurantService.saveRestaurant);
-
-// update a restaurant
-app.put('/restaurants/:id', restaurantService.saveRestaurant);
-
-// remove a restaurant
-app.delete('/restaurants/:id', restaurantService.deleteRestaurant);
-
-// get reservations for a restaurant
-app.get('/restaurants/:id/reservations', restaurantService.getReservations);
-
-// get a single reservation
-app.get('/reservations/:id', reservationService.getReservations);
-
-// create a new reservation
-app.put('/reservations', reservationService.saveReservation);
-
-// update a reservation
-app.put('/reservations/:id', reservationService.saveReservation);
-
-// delete a reservation
-app.delete('/reservations/:id', reservationService.deleteReservation);
+// add all of the routes to the application
+var addRoutes = function(routes) {
+    _.each(routes, function (paths, verb) {
+        _.each(paths, function(fn, path) {
+            app[verb](path, fn);
+        });
+    });
+};
+addRoutes(baseRoutes);
+addRoutes(restaurantServiceRoutes);
+addRoutes(reservationServiceRoutes);
 
 // start the server
 var port = opts.port;
