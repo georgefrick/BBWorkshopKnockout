@@ -26,7 +26,7 @@
  * Created by bpeterson on 1/9/14.
  */
 
-(function(){
+(function () {
     "use strict";
 
     var RestaurantModule = {};
@@ -44,18 +44,18 @@
             availableTimes: []
         },
         urlRoot: "/restaurants",
-        fetchReservations: function() {
+        fetchReservations: function () {
             if (!this.has('id')) {
                 return;
             }
 
             $.ajax('/restaurants/' + this.get('id') + '/reservations', {
                 context: this,
-                success: function(response) {
+                success: function (response) {
                     this.set('reservations', response.reservations);
                     this.set('availableTimes', response.available);
                 },
-                failure: function() {
+                failure: function () {
                     console.log(['Something strange is afoot', arguments]);
                 }
             });
@@ -67,12 +67,21 @@
      * @type {*|void}
      */
     RestaurantModule.RestaurantView = Backbone.View.extend({
+        events: {
+            'click .selectRestaurant': 'selectRestaurant'
+        },
         initialize: function () {
             this.template = Handlebars.templates.restaurant;
+            this.model.on('change',this.render,this);
         },
         render: function () {
             this.$el.html(this.template(this.model.toJSON()));
             return this;
+        },
+        selectRestaurant: function () {
+            console.log("Selected " + this.model.get('name'));
+            this.model.fetchReservations();
+            this.trigger("selectRestaurant", this.model);
         }
     });
 
@@ -85,8 +94,9 @@
         initialize: function () {
             this.template = Handlebars.templates.restaurantManager;
             this.restaurants = new RestaurantModule.RestaurantList();
-            this.restaurants.on("all",this.render, this);
+            this.restaurants.on("add", this.render, this);
             this.restaurants.fetch();
+            _.bindAll(this, "showSelectedRestaurant");
         },
         render: function () {
             this.$el.html(this.template(this));
@@ -95,7 +105,12 @@
         },
         addRestaurantView: function (restaurant) {
             var view = new RestaurantModule.RestaurantView({model: restaurant});
+            view.on('selectRestaurant', this.showSelectedRestaurant);
             this.$('.restaurantList').append(view.render().el);
+        },
+        showSelectedRestaurant: function (model) {
+            var selectedRestaurantView = new RestaurantModule.SelectedRestaurantView({model: model});
+            this.$el.find('.selectedRestaurant').html(selectedRestaurantView.render().el);
         },
         count: function () {
             return this.restaurants.length;
@@ -103,13 +118,25 @@
 
     });
 
+
+    RestaurantModule.SelectedRestaurantView = Backbone.View.extend({
+        initialize: function () {
+            this.template = Handlebars.templates.selectedRestaurant;
+        },
+        render: function () {
+            this.$el.empty();
+            this.$el.append(this.template(this.model.toJSON()));
+            return this;
+        }
+
+    });
     /**
      * Collection of Restaurant models.
      * @type {*|void}
      */
     RestaurantModule.RestaurantList = Backbone.Collection.extend({
-        model:RestaurantModule.Restaurant,
-        url:"/restaurants"
+        model: RestaurantModule.Restaurant,
+        url: "/restaurants"
     });
 
     /**
@@ -121,14 +148,14 @@
         initialize: function () {
             this.template = Handlebars.templates.restaurantList;
             this.restaurants = new RestaurantModule.RestaurantList();
-            this.restaurants.on("all",this.render, this);
+            this.restaurants.on("all", this.render, this);
             this.restaurants.fetch();
         },
         render: function () {
-            this.$el.html(this.template({count:this.count(),restaurant:this.restaurants.toJSON()}));
+            this.$el.html(this.template({count: this.count(), restaurant: this.restaurants.toJSON()}));
             return this;
         },
-        count : function() {
+        count: function () {
             return this.restaurants.length;
         }
     });
