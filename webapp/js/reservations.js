@@ -1,5 +1,36 @@
-window.Reservation = (function() {
-    var reservation = Backbone.Model.extend({
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014 © NVISIA, LLC.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+/**
+ * jgitter 1-10-2014
+ */
+(function() {
+    "use strict";
+
+    var Reservation = {};
+    window.Reservation = Reservation;
+
+    Reservation.Model = Backbone.Model.extend({
         validation: {
             name: {
                 required: true,
@@ -11,7 +42,7 @@ window.Reservation = (function() {
                 fn: function(value) {
                     var check = value.replace(/[\s\(\)]/g, '');
                     if (check.match(/1?-?(\d{3})?-?\d{3}-?\d{4}/) === null) {
-                        return "Please enter a valid phone number [1] [-] [XXX] [-] XXX [-] XXXX"
+                        return "Please enter a valid phone number"
                     }
                 }
             },
@@ -21,55 +52,37 @@ window.Reservation = (function() {
                 range: [1, 10]
             },
             time: {
-                require: true,
-                oneOf: ['4:00 pm', '4:30 pm',
-                        '5:00 pm', '5:30 pm',
-                        '6:00 pm', '6:30 pm',
-                        '7:00 pm', '7:30 pm',
-                        '8:00 pm', '8:30 pm',
-                        '9:00 pm', '9:30 pm',
-                        '10:00 pm']
+                required: true
             }
         }
     });
 
-    var formView = Backbone.View.extend({
+    Reservation.FormView = Backbone.View.extend({
         initialize: function(options) {
-            this.tpl = Handlebars.templates.reservationForm;
+            this.template = Handlebars.templates.reservationForm;
             this.model = new Backbone.Model({
-                reservation: new reservation(),
+                reservation: new Reservation.Model(),
                 restaurant: options.restaurant
             });
 
-            this.model.get('restaurant').
+            this.model.get('restaurant');
 
             Backbone.Validation.bind(this);
         },
         render: function() {
-            this.$el.html(this.tpl());
+            this.$el.html(this.template());
             return this;
         }
     });
 
-    var view = Backbone.View.extend({
+    Reservation.View = Backbone.View.extend({
         initialize: function() {
-            this.tpl = Handlebars.templates.reservation;
-            this.model = new reservation({
-                name: 'Jerry Rice',
-                phone: '1-800-123-4567',
-                guests: 3,
-                time: '5:30 pm'
-            });
+            this.template = Handlebars.templates.reservation;
+            this.model = new Reservation.Model();
         },
         render: function() {
-            this.$el.html(this.tpl(this.model.toJSON()));
+            this.$el.html(this.template(this.model.toJSON()));
             return this;
         }
     });
-
-    return {
-        Model: reservation,
-        View: view,
-        FormView: formView
-    };
 })();

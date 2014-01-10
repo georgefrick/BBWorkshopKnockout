@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <!--
   ~ The MIT License (MIT)
   ~
@@ -23,9 +22,14 @@
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   ~ THE SOFTWARE.
   -->
-<html>
+<html class="no-js" lang="en">
 <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Backbone SPA Workshop - Restaurant Reservation System</title>
+    <link rel="stylesheet" href="css/foundation.css"/>
+    <link rel="stylesheet" href="css/base.css"/>
+    <script src="js/modernizr.js"></script>
     <script type="text/javascript" src="libs/jquery-1.10.2.js"></script>
     <script type="text/javascript" src="libs/json2.js"></script>
     <script type="text/javascript" src="libs/underscore.js"></script>
@@ -36,10 +40,55 @@
     <script type="text/javascript" src="js/restaurant.js"></script>
     <script type="text/javascript" src="js/reservations.js"></script>
     <script type="text/javascript" src="js/precompiled-templates.js"></script>
+    <script type="text/javascript" src="js/foundation.min.js"></script>
 </head>
-<body>
 
-<h1>Hello everyone</h1>
-<div id="restaurant-list-main"></div>
+<body class="restaurant">
+
+    <div class="row">
+        <div class="large-12 columns">
+            <div style="display: inline-block;">
+                <img src="img/icon_01.png" width="90px;"/>
+            </div>
+            <div style="display: inline-block;">
+                <h1 class="title-main">Easy Reservations</h1>
+
+                <p class="title-sub">Simply choose a restaurant, a time, and submit your reservation!</p>
+            </div>
+        </div>
+    </div>
+<!--
+    <div class="row">
+      <div class="large-12 columns">
+      	<div class="panel">
+	        <h3>Use this for a banner if it is needed. </h3>
+      	</div>
+      </div>
+    </div>
+-->
+<div class="row">
+    <div id="restaurant-list-main" class="large-8 medium-8 columns">
+
+    </div>
+
+    <div class="large-4 medium-4 columns">
+        <div class="panel">
+            <h5>Other/Login?:</h5>
+
+            <p>Login for or other info here?</p>
+        </div>
+        <div class="panel">
+            <h5>There is so much more!</h5>
+
+            <p>This is but one example with Backbone, there is so much more possible!</p>
+            <a href="http://backbonejs.org/#Events" class="small button">Go to Backbone.js Docs</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).foundation();
+</script>
+
 </body>
 </html>

@@ -26,14 +26,6 @@ var _ = require("underscore");
 
 var reservations = [];
 
-var availableReservations = ['4:00 pm', '4:30 pm',
-                             '5:00 pm', '5:30 pm',
-                             '6:00 pm', '6:30 pm',
-                             '7:00 pm', '7:30 pm',
-                             '8:00 pm', '8:30 pm',
-                             '9:00 pm', '9:30 pm',
-                             '10:00 pm'];
-
 var restaurants = [{
     id: 1,
     name: "Bartolotta's Lake Park Bistro",
@@ -86,9 +78,33 @@ var restaurants = [{
     address: "1141 N Old World 3rd St"
 }];
 
-var id = 11;
-var getNextId = function() {
-    return id++;
+var validReservationTimes = (function() {
+    var arr = [];
+    var start = new Date();
+    start.setHours(16);
+    start.setMinutes(0);
+    start.setSeconds(0);
+    start.setMilliseconds(0);
+
+    var stop = new Date(start.getTime());
+    stop.setHours(22);
+
+    while (start.getTime() <= stop.getTime()) {
+        arr.push(start.getTime());
+        // add 30 minutes
+        start = new Date(start.getTime() + (1000 * 60 * 30));
+    }
+
+    return arr;
+})();
+
+var restaurantId = 11;
+var reservationId = 1;
+var getNextRestaurantId = function() {
+    return restaurantId++;
+};
+var getNextReservationId = function() {
+    return reservationId++;
 };
 
 exports.getRestaurantList = function() {
@@ -103,7 +119,7 @@ exports.getRestaurant = function(id) {
 
 exports.createRestaurant = function(json) {
     var restaurant = {
-        id: getNextId(),
+        id: getNextRestaurantId(),
         name: json.name,
         cuisine: json.cuisine,
         address: json.address
@@ -139,7 +155,7 @@ exports.getReservationList = function(id) {
     var filtered = _.filter(reservations, function(reservation) {
         return reservation.restaurantId === id;
     });
-    var available = _.difference(availableReservations, _.pluck(filtered, "time"));
+    var available = _.difference(validReservationTimes, _.pluck(filtered, "time"));
     return {
         reservations: filtered,
         available: available
@@ -154,12 +170,13 @@ exports.getReservation = function(id) {
 
 exports.createReservation = function(json) {
     var reservation = {
-        id: getNextId(),
+        id: getNextReservationId(),
         restaurantId: 1 * json.restaurantId,
         name: json.name,
         phone: json.phone,
         guests: json.guests,
-        time: json.time
+        time: 1 * json.time,
+        created: new Date().getTime()
     };
     reservations.push(reservation);
     return reservation;
@@ -180,7 +197,7 @@ exports.updateReservation = function(json) {
     if (json.guests !== undefined) {
         reservation.guests = json.guests;
     }
-    reservation.time = json.time;
+    reservation.time = 1 * json.time;
 
     return reservation;
 };
