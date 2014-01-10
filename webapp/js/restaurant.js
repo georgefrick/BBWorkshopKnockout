@@ -35,18 +35,32 @@
     RestaurantModule.Restaurant = Backbone.Model.extend({
         defaults: {
             name: "undefined",
-            location: ""
+            location: "",
+            reservations: [],
+            availableTimes: []
         },
+        urlRoot: "/restaurants",
+        fetchReservations: function() {
+            if (!this.has('id')) {
+                return;
+            }
 
-        urlRoot: "/restaurants"
+            $.ajax('/restaurants/' + this.get('id') + '/reservations', {
+                context: this,
+                success: function(response) {
+                    this.set('reservations', response.reservations);
+                    this.set('availableTimes', response.available);
+                },
+                failure: function() {
+                    console.log(['Something strange is afoot', arguments]);
+                }
+            });
+        }
     });
 
     RestaurantModule.RestaurantList = Backbone.Collection.extend({
         model:RestaurantModule.Restaurant,
-        url:"/restaurants",
-        parse: function(response){
-            return response.data;
-        }
+        url:"/restaurants"
     });
 
     RestaurantModule.RestaurantView = Backbone.View.extend({

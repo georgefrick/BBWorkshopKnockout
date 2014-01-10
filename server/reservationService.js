@@ -29,13 +29,9 @@ exports.getReservations = function(req, res) {
     var id = req.params.id;
 
     if (id === undefined) {
-        res.send({
-            data: dao.getReservationList()
-        });
+        res.send(dao.getReservationList());
     } else {
-        res.send({
-            data: dao.getReservation(1 * id)
-        });
+        res.send(dao.getReservation(1 * id));
     }
 };
 
@@ -44,15 +40,11 @@ exports.saveReservation = function(req, res) {
     var reservation = req.body;
         reservation.id = (id === undefined ? undefined : 1 * id);
 
-    res.send({
-        data: dao[id === undefined ? 'createReservation' : 'updateReservation'](reservation)
-    });
+    res.send(dao[id === undefined ? 'createReservation' : 'updateReservation'](reservation));
 };
 
 exports.deleteReservation = function(req, res) {
     var id = 1 * req.params.id;
 
-    res.send({
-        data: dao.deleteReservation(id)
-    });
+    res.send(dao.deleteReservation(id));
 };

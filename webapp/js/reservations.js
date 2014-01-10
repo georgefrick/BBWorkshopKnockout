@@ -1,47 +1,49 @@
 window.Reservation = (function() {
     var reservation = Backbone.Model.extend({
-        // validation: {
-        //     name: {
-        //         required: true,
-        //         minLength: 2,
-        //         msg: "Please enter a valid first name"
-        //     },
-        //     phone: {
-        //         required: true,
-        //         fn: function(value) {
-        //             var check = value.replace(/[\s\(\)]/g, '');
-        //             if (check.match(/1?-?(\d{3})?-?\d{3}-?\d{4}/) === null) {
-        //                 return "Please enter a valid phone number [1] [-] [XXX] [-] XXX [-] XXXX"
-        //             }
-        //         }
-        //     },
-        //     guests: {
-        //         required: true,
-        //         pattern: 'digits',
-        //         range: [1, 10]
-        //     },
-        //     time: {
-        //         require: true,
-        //         oneOf: ['4:00 pm', '4:30 pm',
-        //                 '5:00 pm', '5:30 pm',
-        //                 '6:00 pm', '6:30 pm',
-        //                 '7:00 pm', '7:30 pm',
-        //                 '8:00 pm', '8:30 pm',
-        //                 '9:00 pm', '9:30 pm',
-        //                 '10:00 pm']
-        //     }
-        // }
+        validation: {
+            name: {
+                required: true,
+                minLength: 2,
+                msg: "Please enter a valid first name"
+            },
+            phone: {
+                required: true,
+                fn: function(value) {
+                    var check = value.replace(/[\s\(\)]/g, '');
+                    if (check.match(/1?-?(\d{3})?-?\d{3}-?\d{4}/) === null) {
+                        return "Please enter a valid phone number [1] [-] [XXX] [-] XXX [-] XXXX"
+                    }
+                }
+            },
+            guests: {
+                required: true,
+                pattern: 'digits',
+                range: [1, 10]
+            },
+            time: {
+                require: true,
+                oneOf: ['4:00 pm', '4:30 pm',
+                        '5:00 pm', '5:30 pm',
+                        '6:00 pm', '6:30 pm',
+                        '7:00 pm', '7:30 pm',
+                        '8:00 pm', '8:30 pm',
+                        '9:00 pm', '9:30 pm',
+                        '10:00 pm']
+            }
+        }
     });
 
     var formView = Backbone.View.extend({
-        initialize: function() {
+        initialize: function(options) {
             this.tpl = Handlebars.templates.reservationForm;
             this.model = new Backbone.Model({
-                reservation: {},
-                restaurant: this.options.restaurant.toJSON()
+                reservation: new reservation(),
+                restaurant: options.restaurant
             });
 
-            // Backbone.Validation.bind(this);
+            this.model.get('restaurant').
+
+            Backbone.Validation.bind(this);
         },
         render: function() {
             this.$el.html(this.tpl());

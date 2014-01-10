@@ -30,13 +30,9 @@ exports.getRestaurants = function(req, res) {
     var id = req.params.id;
 
     if (id === undefined) {
-        res.send({
-            data: dao.getRestaurantList()
-        });
+        res.send(dao.getRestaurantList());
     } else {
-        res.send({
-            data: dao.getRestaurant(1 * id)
-        });
+        res.send(dao.getRestaurant(1 * id));
     }
 };
 
@@ -45,29 +41,21 @@ exports.saveRestaurant = function(req, res) {
     var restaurant = req.body;
 
     if (id === undefined) {
-        res.send({
-            data: dao.createRestaurant(restaurant)
-        });
+        res.send(dao.createRestaurant(restaurant));
     } else {
         restaurant.id = 1 * id;
-        res.send({
-            data: dao.updateRestaurant(restaurant)
-        });
+        res.send(dao.updateRestaurant(restaurant));
     }
 };
 
 exports.deleteRestaurant = function(req, res) {
     var id = 1 * req.params.id;
 
-    res.send({
-        data: dao.deleteRestaurant(id)
-    });
+    res.send(dao.deleteRestaurant(id));
 };
 
 exports.getReservations = function(req, res) {
     var id = 1 * req.params.id;
 
-    res.send({
-        data: dao.getReservationList(id)
-    });
+    res.send(dao.getReservationList(id));
 }
