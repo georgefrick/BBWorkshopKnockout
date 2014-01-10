@@ -32,6 +32,10 @@
     var RestaurantModule = {};
     window.RestaurantModule = RestaurantModule;
 
+    /**
+     * Model to define a Restaurant
+     * @type {*|void}
+     */
     RestaurantModule.Restaurant = Backbone.Model.extend({
         defaults: {
             name: "undefined",
@@ -58,12 +62,62 @@
         }
     });
 
+    /**
+     * View to Render a single Restaurant.
+     * @type {*|void}
+     */
+    RestaurantModule.RestaurantView = Backbone.View.extend({
+        initialize: function () {
+            this.template = Handlebars.templates.restaurant;
+        },
+        render: function () {
+            this.$el.html(this.template(this.model.toJSON()));
+            return this;
+        }
+    });
+
+    /**
+     * Main View to Manage the Restaurant List for Reservations.
+     * This view contains subviews in order to allow tighter control.
+     * @type {*|void}
+     */
+    RestaurantModule.RestaurantManagerView = Backbone.View.extend({
+        initialize: function () {
+            this.template = Handlebars.templates.restaurantManager;
+            this.restaurants = new RestaurantModule.RestaurantList();
+            this.restaurants.on("all",this.render, this);
+            this.restaurants.fetch();
+        },
+        render: function () {
+            this.$el.html(this.template(this));
+            this.restaurants.each(this.addRestaurantView, this);
+            return this;
+        },
+        addRestaurantView: function (restaurant) {
+            var view = new RestaurantModule.RestaurantView({model: restaurant});
+            this.$('.restaurantList').append(view.render().el);
+        },
+        count: function () {
+            return this.restaurants.length;
+        }
+
+    });
+
+    /**
+     * Collection of Restaurant models.
+     * @type {*|void}
+     */
     RestaurantModule.RestaurantList = Backbone.Collection.extend({
         model:RestaurantModule.Restaurant,
         url:"/restaurants"
     });
 
-    RestaurantModule.RestaurantView = Backbone.View.extend({
+    /**
+     * @TODO Evaluate how we want to present the list. This uses an {{#each}} construct to have a single view.
+     * This View holds onto a list of Restaurant objects and is a single view.
+     * @type {*|void}
+     */
+    RestaurantModule.RestaurantListView = Backbone.View.extend({
         initialize: function () {
             this.template = Handlebars.templates.restaurantList;
             this.restaurants = new RestaurantModule.RestaurantList();
