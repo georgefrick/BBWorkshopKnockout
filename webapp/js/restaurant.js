@@ -113,9 +113,9 @@
             console.log("Selected Restaurant");
             this.restaurants.each(function (restaurant) {
                 if (model===restaurant){
-                    restaurant.set(selected, true);
+                    restaurant.set('selected', true);
                 }else {
-                    restaurant.set(selected, false);
+                    restaurant.set('selected', false);
                 }
 
             });
