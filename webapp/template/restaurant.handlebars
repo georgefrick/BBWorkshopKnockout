@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row restaurantRow">
     <div class="large-12 columns">
         <div class="callout panel">
             <p><strong>{{name}}</strong>{{#if tagline}}<br/>{{/if}}{{tagline}}</p>
@@ -14,29 +14,21 @@
                 </div>
             </div>
             <p>Description: {{description}} </p>
+            {{#if selected}}
             <form>
                 <fieldset>
                     <legend>Available Times</legend>
 
                     <div class="row">
+                        {{#each availableTimes}}
                         <div class="large-3 medium-4 small-6 columns">
-                            5:30 PM
+                            {{this}}
                         </div>
-                        <div class="large-3 medium-4 small-6 columns">
-                            6:00 PM
-                        </div>
-                        <div class="large-3 medium-4 small-6 columns">
-                            6:30 PM
-                        </div>
-                        <div class="large-3 medium-4 small-6 columns">
-                            7:00 PM
-                        </div>
+                        {{/each}}
                     </div>
                 </fieldset>
             </form>
-
+            {{/if}}
         </div>
     </div>
 </div>
-
-
