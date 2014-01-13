@@ -49,8 +49,11 @@
             $.ajax('/restaurants/' + this.get('id') + '/reservations', {
                 context: this,
                 success: function (response) {
-                    this.set('reservations', response.reservations);
-                    this.set('availableTimes', response.available);
+                    this.set({
+                        'reservations': response.reservations,
+                        'availableTimes': response.available
+                    });
+                    this.trigger('fetchComplete');
                 },
                 failure: function () {
                     console.log(['Something strange is afoot', arguments]);
@@ -66,11 +69,17 @@
     RestaurantModule.RestaurantView = Backbone.View.extend({
         initialize: function () {
             this.template = Handlebars.templates.restaurant;
-            this.listenTo(this.model, 'change', this.render);
+            this.listenTo(this.model, 'change:selected', this.selectChange);
+            this.listenTo(this.model, 'fetchComplete', this.render);
         },
         render: function () {
             this.$el.html(this.template(this.model.toJSON()));
             return this;
+        },
+        selectChange: function(restaurant, selected) {
+            if (selected === false) {
+                this.render();
+            }
         }
     });
 
@@ -92,7 +101,6 @@
         },
         addRestaurantView: function (restaurant) {
             var view = new RestaurantModule.RestaurantView({model: restaurant});
-            this.listenTo(view, 'selectRestaurant', this.showSelectedRestaurant);
             this.$('.restaurantList').append(view.render().el);
         },
         selectRestaurant: function (id) {
@@ -113,9 +121,9 @@
         url: "/restaurants",
         selectRestaurant: function(id) {
             this.each(function (restaurant) {
-                if (restaurant.id === id) {
+                if (restaurant.get('id') === id) {
                     restaurant.fetchReservations();
-                    restaurant.set('selected', true, { silent: true });
+                    restaurant.set('selected', true);
                 } else {
                     restaurant.set('selected', false);
                 }
