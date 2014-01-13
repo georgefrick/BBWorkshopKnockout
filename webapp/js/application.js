@@ -34,6 +34,18 @@
         var content = $("#restaurant-list-main");
         content.empty();
         content.append(restaurantView.render().el);
+
+        var router = Backbone.Router.extend({
+            routes: {
+                "restaurant/:id": "selectRestaurant"
+            },
+
+            selectRestaurant: function(id) {
+                restaurantView.selectRestaurant(id);
+            }
+        });
+
+        Backbone.History.start();
     });
 
 })();
