@@ -97,6 +97,7 @@
             this.restaurants = new RestaurantModule.RestaurantList();
             this.restaurants.on("add", this.render, this);
             this.restaurants.fetch();
+            
             _.bindAll(this, "showSelectedRestaurant");
         },
         render: function () {
