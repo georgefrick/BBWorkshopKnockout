@@ -41,7 +41,8 @@
             name: "undefined",
             location: "",
             reservations: [],
-            availableTimes: []
+            availableTimes: [],
+            selected:false
         },
         urlRoot: "/restaurants",
         fetchReservations: function () {
@@ -68,7 +69,7 @@
      */
     RestaurantModule.RestaurantView = Backbone.View.extend({
         events: {
-            'click .selectRestaurant': 'selectRestaurant'
+            'click .restaurantRow': 'selectRestaurant'
         },
         initialize: function () {
             this.template = Handlebars.templates.restaurant;
@@ -109,8 +110,18 @@
             this.$('.restaurantList').append(view.render().el);
         },
         showSelectedRestaurant: function (model) {
-            var selectedRestaurantView = new RestaurantModule.SelectedRestaurantView({model: model});
-            this.$el.find('.selectedRestaurant').html(selectedRestaurantView.render().el);
+            console.log("Selected Restaurant");
+            this.restaurants.each(function (restaurant) {
+                if (model===restaurant){
+                    restaurant.set(selected, true);
+                }else {
+                    restaurant.set(selected, false);
+                }
+
+            });
+
+//            var selectedRestaurantView = new RestaurantModule.SelectedRestaurantView({model: model});
+//            this.$el.find('.selectedRestaurant').html(selectedRestaurantView.render().el);
         },
         count: function () {
             return this.restaurants.length;
