@@ -45,7 +45,7 @@
             }
         });
 
-        Backbone.History.start();
+        Backbone.history.start();
     });
 
 })();
