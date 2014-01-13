@@ -1,19 +1,19 @@
 <div class="row">
     <div class="large-12 columns">
         <div class="callout panel">
-            <p><strong>{{name}}</strong> Tagline for restaurant goes here.</p>
+            <p><strong>{{name}}</strong>{{#if tagline}}<br/>{{/if}}{{tagline}}</p>
             <div class="row">
                 <div class="large-3 medium-6 small-12 columns">
-                    <p>Price: $$$</p>
+                    <p>Price: {{showPrice price}}</p>
                 </div>
                 <div class="large-3 medium-6 small-12 columns">
-                    <p>Rating: *****</p>
+                    <p>Rating: {{showRating rating}}</p>
                 </div>
                 <div class="large-6 medium-12 small-12 columns">
                     <p>Address: {{address}}</p>
                 </div>
             </div>
-            <p>Description: lorum ipsum repeated like so. lorum ipsum repeated like so.  lorum ipsum repeated like so. lorum ipsum repeated like so lorum ipsum repeated like so lorum ipsum repeated like so. </p>
+            <p>Description: {{description}} </p>
             <form>
                 <fieldset>
                     <legend>Available Times</legend>

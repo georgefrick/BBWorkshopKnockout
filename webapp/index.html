@@ -27,20 +27,21 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Backbone SPA Workshop - Restaurant Reservation System</title>
-    <link rel="stylesheet" href="css/foundation.css"/>
+
     <link rel="stylesheet" href="css/base.css"/>
-    <script src="js/modernizr.js"></script>
+
     <script type="text/javascript" src="libs/jquery-1.10.2.js"></script>
     <script type="text/javascript" src="libs/json2.js"></script>
     <script type="text/javascript" src="libs/underscore.js"></script>
     <script type="text/javascript" src="libs/backbone.js"></script>
     <script type="text/javascript" src="libs/backbone-validation.js"></script>
     <script type="text/javascript" src="libs/handlebars-v1.3.0.js"></script>
+    <script type="text/javascript" src="js/handlebars-helpers.js"></script>
     <script type="text/javascript" src="js/application.js"></script>
     <script type="text/javascript" src="js/restaurant.js"></script>
     <script type="text/javascript" src="js/reservations.js"></script>
     <script type="text/javascript" src="js/precompiled-templates.js"></script>
-    <script type="text/javascript" src="js/foundation.min.js"></script>
+
 </head>
 
 <body class="restaurant">
@@ -86,8 +87,13 @@
     </div>
 </div>
 
+    <link rel="stylesheet" href="css/foundation.css"/>
+    <script type="text/javascript" src="js/modernizr.js"></script>
+    <script type="text/javascript" src="js/foundation.min.js"></script>
 <script>
-    $(document).foundation();
+    $(document).ready( function() {
+        $(document).foundation();
+    });
 </script>
 
 </body>
