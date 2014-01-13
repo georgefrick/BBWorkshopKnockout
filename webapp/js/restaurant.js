@@ -91,8 +91,8 @@
             }
         },
         selectTime:function(time){
-            var view = new Reservation.FormView();
-            this.$('.reservationForm').append(view.render().el);
+            var view = new Reservation.FormView({restaurant:this.model.get('id'),time:time});
+            this.$('.reservationForm').empty().append(view.render().el);
         }
     });
 

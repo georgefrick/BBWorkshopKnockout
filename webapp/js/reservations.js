@@ -60,9 +60,9 @@
     Reservation.FormView = Backbone.View.extend({
         initialize: function(options) {
             this.template = Handlebars.templates.reservationForm;
-            this.model = new Backbone.Model({
-                reservation: new Reservation.Model(),
-                restaurant: options.restaurant
+            this.model = new Reservation.Model({
+                restaurantId: options.restaurantId,
+                reservationTime:options.time
             });
 
             this.model.get('restaurant');
