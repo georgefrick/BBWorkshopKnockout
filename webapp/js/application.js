@@ -35,15 +35,19 @@
         content.empty();
         content.append(restaurantView.render().el);
 
-        var router = Backbone.Router.extend({
+        new (Backbone.Router.extend({
             routes: {
                 "restaurant/:id": "selectRestaurant"
             },
 
             selectRestaurant: function(id) {
-                restaurantView.selectRestaurant(id);
+                var idInteger = parseInt(id);
+                if (idInteger === NaN) {
+                    throw "Unable to parse restaurant id";
+                }
+                restaurantView.selectRestaurant(idInteger);
             }
-        });
+        }))();
 
         Backbone.history.start();
     });

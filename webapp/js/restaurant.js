@@ -49,8 +49,11 @@
             $.ajax('/restaurants/' + this.get('id') + '/reservations', {
                 context: this,
                 success: function (response) {
-                    this.set('reservations', response.reservations);
-                    this.set('availableTimes', response.available);
+                    this.set({
+                        'reservations': response.reservations,
+                        'availableTimes': response.available
+                    });
+                    this.trigger('fetchComplete');
                 },
                 failure: function () {
                     console.log(['Something strange is afoot', arguments]);
@@ -72,7 +75,8 @@
         },
         initialize: function () {
             this.template = Handlebars.templates.restaurant;
-            this.listenTo(this.model, 'change', this.render);
+            this.listenTo(this.model, 'change:selected', this.selectChange);
+            this.listenTo(this.model, 'fetchComplete', this.render);
         },
         render: function () {
             if (!this.model.get('selected') && this.formView){
@@ -80,6 +84,11 @@
             }
             this.$el.html(this.template(this.model.toJSON()));
             return this;
+        },
+        selectChange: function(restaurant, selected) {
+            if (selected === false) {
+                this.render();
+            }
         },
         selectTime:function(time){
             var view = new Reservation.FormView();
