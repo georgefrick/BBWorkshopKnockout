@@ -62,7 +62,7 @@
             this.template = Handlebars.templates.reservationForm;
             this.model = new Reservation.Model({
                 restaurantId: options.restaurantId,
-                reservationTime:options.time
+                reservationTime:options.reservationTime
             });
 
             this.model.get('restaurant');
@@ -70,7 +70,7 @@
             Backbone.Validation.bind(this);
         },
         render: function() {
-            this.$el.html(this.template());
+            this.$el.html(this.template(this.model.toJSON()));
             return this;
         }
     });

@@ -90,8 +90,9 @@
                 this.render();
             }
         },
-        selectTime:function(time){
-            var view = new Reservation.FormView({restaurant:this.model.get('id'),time:time});
+        selectTime:function(event){
+            var reservationTime = parseInt(event.currentTarget.getAttribute('value'));
+            var view = new Reservation.FormView({restaurant:this.model.get('id'),reservationTime:reservationTime});
             this.$('.reservationForm').empty().append(view.render().el);
         }
     });
