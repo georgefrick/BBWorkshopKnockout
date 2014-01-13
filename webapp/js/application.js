@@ -49,7 +49,9 @@
             }
         }))();
 
-        Backbone.history.start();
+        restaurantView.on('ready', function() {
+            Backbone.history.start();
+        });
     });
 
 })();

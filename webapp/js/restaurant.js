@@ -93,7 +93,11 @@
             this.template = Handlebars.templates.restaurantManager;
             this.restaurants = new RestaurantModule.RestaurantList();
             this.listenTo(this.restaurants, "add", this.addRestaurantView);
-            this.restaurants.fetch();
+
+            _.bindAll(this, "fireReadyEvent");
+            this.restaurants.fetch({
+                success: this.fireReadyEvent
+            });
         },
         render: function () {
             this.$el.html(this.template(this));
@@ -108,8 +112,10 @@
         },
         count: function () {
             return this.restaurants.length;
+        },
+        fireReadyEvent: function() {
+            this.trigger('ready');
         }
-
     });
 
     /**
