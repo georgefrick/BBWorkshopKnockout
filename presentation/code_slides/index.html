@@ -1,0 +1,252 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1024" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>SPA Workshop Code</title>
+    
+    <meta name="description" content="Slides for explaining basic Backbone concepts and getting attendees started on the exercises." />
+    <meta name="author" content="nvisia" />
+
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic" rel="stylesheet" />
+    <link href="css/impress-nvisia.css" rel="stylesheet" />
+    
+    <link rel="shortcut icon" href="favicon.png" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+</head>
+
+<!--
+    When impress.js script detects that browser supports all required features, this class name will
+    be removed.
+-->
+<body class="impress-not-supported">
+
+<!--
+    For example this fallback message is only visible when there is `impress-not-supported` class on body.
+-->
+<div class="fallback-message">
+    <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
+    <p>For the best experience please use the latest <b>Chrome</b>, <b>Safari</b> or <b>Firefox</b> browser.</p>
+</div>
+
+<div id="impress">
+
+
+    <!-- Will be our standard text only slide -->
+    <div id="text-0" class="step slide" data-x="1000" data-y="0">
+        <p>
+        We're going to go over some Backbone basics, and then we'll start coding.
+        </p>
+        <ul>
+            <li>Scoping our modules.</li>
+            <li>What is meant by 'extend'.</li>
+            <li>The basic Model.</li>
+            <li>The basic Collection.</li>
+            <li>A quick wiring to REST.</li>
+        </ul>
+    </div>
+
+
+<!-- ************************************************************* -->
+    <div id="code-1" class="step" data-x="2000" data-y="0" >
+        <span style="font-size:  1.25rem;">
+        <pre class="brush: js; ">
+/*
+ * Snippet 1. Providing a scope for our modules.
+ */
+(function () {
+    "use strict";
+
+    var RestaurantModule = {};
+    window.RestaurantModule = RestaurantModule;
+
+    return RestaurantModule;  // Preparation for Require.js
+})();
+/*
+ * end
+ */
+        </pre>
+        </span>
+    </div>
+<!-- ************************************************************* -->
+
+<!-- ************************************************************* -->
+    <div id="code-2" class="step" data-x="3000" data-y="0" >
+        <span style="font-size:  1.25rem;">
+        <pre class="brush: js; ">
+/*
+ * Snippet 2. Understanding Extend
+ */
+var car = {
+    type: 'car',
+	name: "betsy",
+    start: function() {
+	  console.log("starting up " + this.type + " " + this.name);
+    }
+};
+
+car.start();
+
+var truck = {
+    type: 'truck',
+	name: 'mark',
+	honk: function() {
+	  console.log("honking horn of " + this.type + " " + this.name);
+	}
+};
+truck.honk();
+
+var suv = _.extend(car, truck);
+suv.name = 'george';
+suv.type = 'suv';
+suv.start();
+suv.honk();
+/*
+ * end
+ */
+        </pre>
+        </span>
+    </div>
+    <!-- ************************************************************* -->
+
+    <div id="output-2" class="step" data-x="3000" data-y="1000" >
+        <span style="font-size:  1.25rem;">
+        <pre class="brush: js; ">
+/*
+ * Snippet 2 Output.
+ */
+
+Input into Firebug:
+>>> var car = {     type: 'car',  	name: "betsy",   ...  suv.type = 'suv';  suv.start();  suv.honk();
+
+starting up car betsy
+honking horn of truck mark
+starting up suv george
+honking horn of suv george
+
+/*
+ * end
+ */
+        </pre>
+        </span>
+    </div>
+    <!-- ************************************************************* -->
+
+    <!-- ************************************************************* -->
+    <div id="code-3" class="step" data-x="4000" data-y="0" >
+        <span style="font-size:  1.25rem;">
+        <pre class="brush: js; ">
+
+/*
+ * Snippet 3. A basic Model
+ */
+RestaurantModule.Restaurant = Backbone.Model.extend({
+        defaults: {
+            name: "undefined",
+            location: "",
+            reservations: [],
+            availableTimes: [],
+            selected: false
+        },
+        urlRoot: "/restaurants"
+    });
+/*
+ * end
+ */
+
+        </pre>
+        </span>
+    </div>
+    <!-- ************************************************************* -->
+
+    <!-- ************************************************************* -->
+    <div id="code-4" class="step" data-x="5000" data-y="0" >
+        <span style="font-size:  1.25rem;">
+        <pre class="brush: js; ">
+
+/*
+ * Snippet 4. A basic Collection
+ */
+ RestaurantModule.RestaurantList = Backbone.Collection.extend({
+        model: RestaurantModule.Restaurant,
+        url: "/restaurants"
+    });
+
+
+Input into Firebug:
+>>> var restaurants = new RestaurantModule.RestaurantList();
+>>> restaurants.fetch();
+>>> restaurants.forEach(function(r) { console.log(r.get('name') + ": " + r.get('id')) } )
+
+/*
+ * end
+ */
+
+        </pre>
+        </span>
+    </div>
+    <!-- ************************************************************* -->
+
+    <!-- ************************************************************* -->
+    <div id="output-4" class="step" data-x="5000" data-y="0" >
+        <span style="font-size:  1.25rem;">
+        <pre class="brush: js; ">
+
+/*
+ * Snippet 4. Output
+ */
+
+Zarletti: 1ldmpLEtHGLCNmsI
+Mader's: BpbLDcavDPJN6Opm
+Kil@Wat: T2qnz5DwVU5hA0ar
+Sanford: U0ojeKMKybKeTLMx
+Eddie Martini's: aHsEQCTPyxqJguXe
+Hinterland Erie Street Gastropub: b0CoyLZckATxWzNd
+Carson's Ribs: go3IM27PHqaCWn1f
+Shogun: hInHppsH5Qv8momc
+Harbor House: wTbi8kZaYFiuZF7b
+Bartolotta's Lake Park Bistro: zEFtfkz3z3nx7qlh
+
+/*
+ * end
+ */
+
+        </pre>
+        </span>
+    </div>
+    <!-- ************************************************************* -->
+
+    <!-- An overview step that shows all slides -->
+    <div id="overview" class="step" data-x="0" data-y="0" data-scale="10">
+    </div>
+
+</div>
+
+<script>
+if ("ontouchstart" in document.documentElement) { 
+    document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
+}
+</script>
+
+<!--
+    To make all described above really work, you need to include impress.js in the page.
+    
+    You also need to call a `impress().init()` function to initialize impress.js presentation.
+    And you should do it in the end of your document. Not only because it's a good practice, but also
+    because it should be done when the whole document is ready.
+-->
+<script type="text/javascript" src="scripts/shCore.js"></script>
+
+<script type="text/javascript" src="scripts/shBrushJScript.js"></script>
+<link type="text/css" rel="stylesheet" href="styles/shCoreDefault.css"/>
+<link rel="stylesheet" type="text/css" href="styles/shThemeDefault.css" />
+
+
+<script src="js/impress.js"></script>
+<script>impress().init();</script>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>
