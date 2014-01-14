@@ -30,6 +30,8 @@
     "use strict";
 
     $(document).ready(function(){
+        _.extend(Backbone.Model.prototype, Backbone.Validation.mixin);
+        
         var restaurantView = new RestaurantModule.RestaurantManagerView();
         var content = $("#restaurant-list-main");
         content.empty();
@@ -41,11 +43,7 @@
             },
 
             selectRestaurant: function(id) {
-                var idInteger = parseInt(id);
-                if (idInteger === NaN) {
-                    throw "Unable to parse restaurant id";
-                }
-                restaurantView.selectRestaurant(idInteger);
+                restaurantView.selectRestaurant(id);
             }
         }))();
 
