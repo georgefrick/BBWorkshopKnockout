@@ -22,10 +22,27 @@
  * THE SOFTWARE.
  */
 
+/**
+ * @author jgitter
+ */
+
 var express = require('express');
 var app = express();
 
 var _ = require('underscore');
+
+// connect to the data store needed for this application
+var DB = require('nedb');
+var db = {};
+db.restaurants = new DB({
+    filename: './server/restaurants.db',
+    autoload: true
+});
+db.reservations = new DB({
+    filename: './server/reservations.db',
+    autoload: true
+});
+global.db = db;
 
 var restaurantService = require('./restaurantService.js');
 var reservationService = require('./reservationService.js');
@@ -57,6 +74,10 @@ var restaurantServiceRoutes = {
         '/restaurants': restaurantService.saveRestaurant,
         '/restaurants/:id': restaurantService.saveRestaurant
     },
+    'post': {
+        '/restaurants': restaurantService.saveRestaurant,
+        '/restaurants/:id': restaurantService.saveRestaurant
+    },
     'delete': {
         '/restaurants/:id': restaurantService.deleteRestaurant
     }
@@ -66,6 +87,10 @@ var reservationServiceRoutes = {
         '/reservations/:id': reservationService.getReservations
     },
     'put': {
+        '/reservations': reservationService.saveReservation,
+        '/reservations/:id': reservationService.saveReservation
+    },
+    'post': {
         '/reservations': reservationService.saveReservation,
         '/reservations/:id': reservationService.saveReservation
     },

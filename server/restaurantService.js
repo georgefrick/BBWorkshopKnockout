@@ -22,6 +22,9 @@
  * THE SOFTWARE.
  */
 
+/**
+ * @author jgitter
+ */
 
 var dao = require('./dao.js');
 var _ = require('underscore');
@@ -30,9 +33,9 @@ exports.getRestaurants = function(req, res) {
     var id = req.params.id;
 
     if (id === undefined) {
-        res.send(dao.getRestaurantList());
+        dao.getRestaurantList(res);
     } else {
-        res.send(dao.getRestaurant(1 * id));
+        dao.getRestaurant(res, 1 * id);
     }
 };
 
@@ -41,21 +44,21 @@ exports.saveRestaurant = function(req, res) {
     var restaurant = req.body;
 
     if (id === undefined) {
-        res.send(dao.createRestaurant(restaurant));
+        dao.createRestaurant(res, restaurant);
     } else {
         restaurant.id = 1 * id;
-        res.send(dao.updateRestaurant(restaurant));
+        dao.updateRestaurant(res, restaurant);
     }
 };
 
 exports.deleteRestaurant = function(req, res) {
     var id = 1 * req.params.id;
 
-    res.send(dao.deleteRestaurant(id));
+    dao.deleteRestaurant(res, id);
 };
 
 exports.getReservations = function(req, res) {
     var id = 1 * req.params.id;
 
-    res.send(dao.getReservationList(id));
+    dao.getReservationList(res, id);
 }
