@@ -15,23 +15,8 @@
             </div>
             <p>Description: {{description}} </p>
             <a href="#restaurant/{{id}}" name="restaurant-{{id}}" class="button restaurantRow" style="color: white;">Show Times</a>
-            {{#if selected}}
-            <form>
-                <fieldset>
-                    <legend>Available Times</legend>
-
-                    <div class="row">
-                        {{#each availableTimes}}
-                        <div class="large-3 medium-4 small-6 columns availableTime" value="{{this}}">
-                            {{showTime this}}
-                        </div>
-                        {{/each}}
-                    </div>
-                </fieldset>
-            </form>
-
+            <div class="availableTimes"/>
             <div class="reservationForm" />
-            {{/if}}
         </div>
     </div>
 </div>

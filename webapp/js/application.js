@@ -31,23 +31,45 @@
 
     $(document).ready(function(){
         _.extend(Backbone.Model.prototype, Backbone.Validation.mixin);
-        
-        var restaurantView = new RestaurantModule.RestaurantManagerView();
-        var restaurantContent = $("#restaurant-list-main");
-        restaurantContent.empty();
-        restaurantContent.append(restaurantView.render().el);
+        var allRestaurantView = new RestaurantModule.RestaurantListView();
+
+        var allRestaurantContent = $("#restaurant-list-main");
+        var singleRestaurantContent = $("#selected-restaurant-main");
+        var reservationResultContent = $("#show-reservation-main");
+
+        allRestaurantContent.empty();
+        allRestaurantContent.append(allRestaurantView.render().el);
 
         new (Backbone.Router.extend({
             routes: {
-                "restaurant/:id": "selectRestaurant"
+                "":"showRestaurants",
+                "restaurant/:id": "selectRestaurant",
+                "showReservationSuccess/:id":"showReservationResult"
             },
 
+            showRestaurants :function() {
+                allRestaurantContent.show();
+                singleRestaurantContent.hide();
+                reservationResultContent.hide();
+            },
             selectRestaurant: function(id) {
-                restaurantView.selectRestaurant(id);
+                allRestaurantContent.hide();
+                singleRestaurantContent.show();
+                reservationResultContent.hide();
+
+                var selected = allRestaurantView.getRestaurantById(id);
+                var singleRestaurantView = new RestaurantModule.RestaurantView({model:selected});
+                singleRestaurantContent.empty().append(singleRestaurantView.el);
+                singleRestaurantView.showTimes();
+            },
+            showReservationResult:function(id){
+                allRestaurantContent.hide();
+                singleRestaurantContent.hide();
+                reservationResultContent.show();
             }
         }))();
 
-        restaurantView.on('ready', function() {
+        allRestaurantView.on('ready', function() {
             Backbone.history.start();
         });
     });

@@ -1,0 +1,14 @@
+<form>
+    <fieldset>
+        <legend>Available Times</legend>
+
+        <div class="row">
+            {{#each availableTimes}}
+            <div class="large-3 medium-4 small-6 columns availableTime" value="{{this}}">
+                {{showTime this}}
+            </div>
+            {{/each}}
+        </div>
+    </fieldset>
+</form>
+

@@ -67,32 +67,38 @@
      * @type {*|void}
      */
     RestaurantModule.RestaurantView = Backbone.View.extend({
-        defaults:{
-          formView:undefined
+        defaults: {
+            formView: undefined,
+            selected:false
         },
         events: {
             'click .availableTime': 'selectTime'
         },
         initialize: function () {
             this.template = Handlebars.templates.restaurant;
-            this.listenTo(this.model, 'change:selected', this.selectChange);
             this.listenTo(this.model, 'fetchComplete', this.render);
         },
         render: function () {
-            if (!this.model.get('selected') && this.formView){
+            if (this.formView) {
                 this.$el.find('.reservationForm').detach();
+                this.formView=undefined;
             }
+
             this.$el.html(this.template(this.model.toJSON()));
+            if (this.selected){
+                this.$el.find(".availableTimes").html(this.availableTimes.render().el);
+            }
             return this;
         },
-        selectChange: function(restaurant, selected) {
-            if (selected === false) {
-                this.render();
-            }
+        showTimes: function(){
+            this.selected=true;
+            this.availableTimes = new RestaurantModule.TimeSlotView({model:this.model});
+            this.model.fetchReservations();
         },
-        selectTime:function(event){
+        selectTime: function (event) {
             var reservationTime = parseInt(event.currentTarget.getAttribute('value'));
-            var view = new Reservation.FormView({restaurantId:this.model.get('id'),reservationTime:reservationTime});
+            var view = new Reservation.FormView({restaurantId: this.model.get('id'), reservationTime: reservationTime});
+            this.formView = view;
             this.$('.reservationForm').empty().append(view.render().el);
         }
     });
@@ -102,9 +108,9 @@
      * This view contains subviews in order to allow tighter control.
      * @type {*|void}
      */
-    RestaurantModule.RestaurantManagerView = Backbone.View.extend({
+    RestaurantModule.RestaurantListView = Backbone.View.extend({
         initialize: function () {
-            this.template = Handlebars.templates.restaurantManager;
+            this.template = Handlebars.templates.restaurantListView;
             this.restaurants = new RestaurantModule.RestaurantList();
             this.listenTo(this.restaurants, "add", this.addRestaurantView);
 
@@ -121,14 +127,14 @@
             var view = new RestaurantModule.RestaurantView({model: restaurant});
             this.$('.restaurantList').append(view.render().el);
         },
-        selectRestaurant: function (id) {
-            this.restaurants.selectRestaurant(id);
-        },
         count: function () {
             return this.restaurants.length;
         },
-        fireReadyEvent: function() {
+        fireReadyEvent: function () {
             this.trigger('ready');
+        },
+        getRestaurantById:function(id){
+            return this.restaurants.get(id);
         }
     });
 
@@ -138,18 +144,18 @@
      */
     RestaurantModule.RestaurantList = Backbone.Collection.extend({
         model: RestaurantModule.Restaurant,
-        url: "/restaurants",
-        selectRestaurant: function(id) {
-            this.each(function (restaurant) {
-                if (restaurant.id === id) {
-                    restaurant.fetchReservations();
-                    restaurant.set('selected', true, { silent: true });
-                } else {
-                    restaurant.set('selected', false);
-                }
-            });
-        }
+        url: "/restaurants"
     });
+
+    RestaurantModule.TimeSlotView = Backbone.View.extend({
+        initialize:function(options){
+            this.template = Handlebars.templates.availableTimes;
+        },
+        render:function(){
+            this.$el.html(this.template(this.model.toJSON()));
+            return this;
+        }
+    })
 
     return RestaurantModule;
 })();
