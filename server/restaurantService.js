@@ -35,7 +35,7 @@ exports.getRestaurants = function(req, res) {
     if (id === undefined) {
         dao.getRestaurantList(res);
     } else {
-        dao.getRestaurant(res, 1 * id);
+        dao.getRestaurant(res, id);
     }
 };
 
@@ -46,19 +46,19 @@ exports.saveRestaurant = function(req, res) {
     if (id === undefined) {
         dao.createRestaurant(res, restaurant);
     } else {
-        restaurant.id = 1 * id;
+        restaurant.id = id;
         dao.updateRestaurant(res, restaurant);
     }
 };
 
 exports.deleteRestaurant = function(req, res) {
-    var id = 1 * req.params.id;
+    var id = req.params.id;
 
     dao.deleteRestaurant(res, id);
 };
 
 exports.getReservations = function(req, res) {
-    var id = 1 * req.params.id;
+    var id = req.params.id;
 
     dao.getReservationList(res, id);
 }

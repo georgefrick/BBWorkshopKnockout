@@ -77,7 +77,7 @@ exports.getRestaurantList = function(res) {
 };
 
 exports.getRestaurant = function(res, id) {
-    db.restaurants.findOne({ id: id }, function(err, doc) {
+    db.restaurants.findOne({ _id: id }, function(err, doc) {
         doc.id = doc._id;
         res.send(doc);
     });
@@ -122,7 +122,7 @@ exports.getReservationList = function(res, id) {
 };
 
 exports.getReservation = function(res, id) {
-    db.reservations.findOne({ id: id }, function(err, doc) {
+    db.reservations.findOne({ _id: id }, function(err, doc) {
         doc.id = doc._id;
         res.send(doc);
     });
@@ -138,10 +138,10 @@ exports.createReservation = function(res, json) {
 
 exports.updateReservation = function(res, json) {
     var reservation = new Reservation(json);
-    db.reservations.update({ id: reservation.id }, {
+    db.reservations.update({ _id: reservation.id }, {
         $set: reservation
     }, function() {
-        db.reservations.findOne({ id: reservation.id }, function(err, doc) {
+        db.reservations.findOne({ _id: reservation.id }, function(err, doc) {
             doc.id = doc._id;
             res.send(doc);
         });
@@ -149,6 +149,6 @@ exports.updateReservation = function(res, json) {
 };
 
 exports.deleteReservation = function(res, id) {
-    db.reservations.remove({ id: id });
+    db.reservations.remove({ _id: id });
     res.send("Reservation " + id + " deleted");
 };
