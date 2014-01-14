@@ -31,20 +31,20 @@ exports.getReservations = function(req, res) {
     if (id === undefined) {
         dao.getReservationList(res);
     } else {
-        dao.getReservation(res, 1 * id);
+        dao.getReservation(res, id);
     }
 };
 
 exports.saveReservation = function(req, res) {
     var id = req.params.id;
     var reservation = req.body;
-        reservation.id = (id === undefined ? undefined : 1 * id);
+    reservation.id = id;
 
     dao[id === undefined ? 'createReservation' : 'updateReservation'](res, reservation);
 };
 
 exports.deleteReservation = function(req, res) {
-    var id = 1 * req.params.id;
+    var id = req.params.id;
 
     dao.deleteReservation(res, id);
 };
