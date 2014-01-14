@@ -37,10 +37,6 @@
         restaurantContent.empty();
         restaurantContent.append(restaurantView.render().el);
 
-        var notificationContent = $("#notificationBar");
-        notificationContent.empty();
-        notificationContent.append(Notification.View.render().el);
-
         new (Backbone.Router.extend({
             routes: {
                 "restaurant/:id": "selectRestaurant"

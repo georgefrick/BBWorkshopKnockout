@@ -103,7 +103,6 @@
 
             // Make the update to the value as a result of the Enter.
             this.changeGenericValue(event);
-            return;
         },
         submitReservationRequest: function () {
 //            var validationResults = this.model.validate();
@@ -111,11 +110,10 @@
                 this.model.save(this.model,
                     {wait: true,
                         success: function () {
-                            Notification.View.notify("Success","/","Please select to continue.");
-                            this.remove();
+                            // TODO What do we do here?
                         },
                         error: function () {
-                            Notification.View.notify("Failure");
+                            // TODO What do we do here?
                         }
                     }
                 );
