@@ -1,0 +1,10 @@
+{{#if message}}
+<div class="large-12 columns">
+    <div class="panel">
+        <div>{{message}}</div>
+        {{#if route}}
+            <a href="{{route}}">{{routeText}}</a>
+        {{/if}}
+    </div>
+</div>
+{{/if}}

@@ -23,39 +23,47 @@
  */
 
 /**
- * Created by bpeterson on 1/9/14.
+ * Created by bpeterson on 1/14/14.
  */
 
-(function(){
+(function () {
     "use strict";
 
-    $(document).ready(function(){
-        var restaurantView = new RestaurantModule.RestaurantManagerView();
-        var restaurantContent = $("#restaurant-list-main");
-        restaurantContent.empty();
-        restaurantContent.append(restaurantView.render().el);
+    var Notification = {};
 
-        var notificationContent = $("#notificationBar");
-        notificationContent.empty();
-        notificationContent.append(Notification.View.render().el);
+    window.Notification = Notification;
 
-        new (Backbone.Router.extend({
-            routes: {
-                "restaurant/:id": "selectRestaurant"
-            },
-
-            selectRestaurant: function(id) {
-                var idInteger = parseInt(id);
-                if (idInteger === NaN) {
-                    throw "Unable to parse restaurant id";
-                }
-                restaurantView.selectRestaurant(idInteger);
-            }
-        }))();
-
-        restaurantView.on('ready', function() {
-            Backbone.history.start();
-        });
+    var Model = Backbone.Model.extend({
+        defaults: {
+            message: '',
+            route: '',
+            routeText: ''
+        }
     });
+
+
+    var View = Backbone.View.extend({
+        initialize: function (options) {
+            this.template = Handlebars.templates.notification;
+            this.model = new Model();
+            this.listenTo(this.model, "change", this.render);
+        },
+        render: function () {
+            this.$el.html(this.template(this.model.toJSON()));
+            return this;
+        },
+        notify: function (message, anchorRoute, anchorRouteText) {
+            this.model.set({'message': message,
+                'route': anchorRoute,
+                'routeText': anchorRouteText});
+            this.$el.focus();
+        },
+        resetMessage: function () {
+            this.model.clear();
+        }
+
+    });
+
+    Notification.View = new View();
 
 })();

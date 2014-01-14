@@ -24,7 +24,7 @@
 /**
  * jgitter 1-10-2014
  */
-(function() {
+(function () {
     "use strict";
 
     var Reservation = {};
@@ -32,7 +32,7 @@
 
     Reservation.Model = Backbone.Model.extend({
         urlRoot: "/reservations",
-        url:"/reservations",
+        url: "/reservations",
         validation: {
             name: {
                 required: true,
@@ -41,7 +41,7 @@
             },
             phone: {
                 required: true,
-                fn: function(value) {
+                fn: function (value) {
                     var check = value.replace(/[\s\(\)]/g, '');
                     if (check.match(/1?-?(\d{3})?-?\d{3}-?\d{4}/) === null) {
                         return "Please enter a valid phone number"
@@ -64,25 +64,25 @@
             'change input[type="text"]': 'changeGenericValue',
             'change select': 'changeGenericValue',
             "keypress input[type='text']": 'actOnEnter',
-            'click .submitButton':'submitReservationRequest',
-            'click .cancelButton' : 'cancelReservationRequest'
+            'click .submitButton': 'submitReservationRequest',
+            'click .cancelButton': 'cancelReservationRequest'
         },
-        initialize: function(options) {
+        initialize: function (options) {
             this.template = Handlebars.templates.reservationForm;
             this.model = new Reservation.Model({
                 restaurantId: options.restaurantId,
-                reservationTime:options.reservationTime
+                time: options.reservationTime
             });
 
             this.model.get('restaurant');
 
 //            Backbone.Validation.bind(this);
         },
-        render: function() {
+        render: function () {
             this.$el.html(this.template(this.model.toJSON()));
             return this;
         },
-        changeGenericValue : function(event){
+        changeGenericValue: function (event) {
             var sValue = $(event.currentTarget).val();
             var sName = $(event.currentTarget).attr("name");
 
@@ -91,10 +91,10 @@
             temp[sName] = sValue;
 
             // Update the model but don't cause any change event.
-            this.model.set(temp,{silent:true});
+            this.model.set(temp, {silent: true});
         },
-        actOnEnter: function(event){
-            if (event.keyCode != 13){
+        actOnEnter: function (event) {
+            if (event.keyCode != 13) {
                 return;
             }
 
@@ -103,34 +103,37 @@
 
             // Make the update to the value as a result of the Enter.
             this.changeGenericValue(event);
-            return false;
+            return;
         },
         submitReservationRequest: function () {
 //            var validationResults = this.model.validate();
 //            if (this.model.isValid()) {
-//              this.model.save(this.model, {
-//                    success: function() {
-//                        console.log("Saved Reservations");
-//                    },
-//                    error: function () {
-//                        console.log("Failed to save()");
-//                    }
-//              });
-            this.model.save(this.model,{wait:true});
+                this.model.save(this.model,
+                    {wait: true,
+                        success: function () {
+                            Notification.View.notify("Success","/","Please select to continue.");
+                            this.remove();
+                        },
+                        error: function () {
+                            Notification.View.notify("Failure");
+                        }
+                    }
+                );
+//            }
             return false;
         },
-        cancelReservationRequest: function(){
+        cancelReservationRequest: function () {
             this.remove();
             return false;
         }
     });
 
     Reservation.View = Backbone.View.extend({
-        initialize: function() {
+        initialize: function () {
             this.template = Handlebars.templates.reservation;
             this.model = new Reservation.Model();
         },
-        render: function() {
+        render: function () {
             this.$el.html(this.template(this.model.toJSON()));
             return this;
         }
