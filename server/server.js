@@ -74,6 +74,10 @@ var restaurantServiceRoutes = {
         '/restaurants': restaurantService.saveRestaurant,
         '/restaurants/:id': restaurantService.saveRestaurant
     },
+    'post': {
+        '/restaurants': restaurantService.saveRestaurant,
+        '/restaurants/:id': restaurantService.saveRestaurant
+    },
     'delete': {
         '/restaurants/:id': restaurantService.deleteRestaurant
     }
@@ -83,6 +87,10 @@ var reservationServiceRoutes = {
         '/reservations/:id': reservationService.getReservations
     },
     'put': {
+        '/reservations': reservationService.saveReservation,
+        '/reservations/:id': reservationService.saveReservation
+    },
+    'post': {
         '/reservations': reservationService.saveReservation,
         '/reservations/:id': reservationService.saveReservation
     },
