@@ -66,6 +66,8 @@
                 allRestaurantContent.hide();
                 singleRestaurantContent.hide();
                 reservationResultContent.show();
+                // TODO Need to clean this up :) BDP
+                alert("Successfully created reservation"+id);
             }
         }))();
 

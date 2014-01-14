@@ -32,38 +32,41 @@
 
     Reservation.Model = Backbone.Model.extend({
         urlRoot: "/reservations",
-        url: "/reservations",
-        validation: {
-            name: {
-                required: true,
-                minLength: 2,
-                msg: "Please enter a valid first name"
-            },
-            phone: {
-                required: true,
-                fn: function (value) {
-                    var check = value.replace(/[\s\(\)]/g, '');
-                    if (check.match(/^1?-?(\d{3})?-?\d{3}-?\d{4}$/) === null) {
-                        return "Please enter a valid phone number"
-                    }
-                }
-            },
-            guests: {
-                required: true,
-                pattern: 'digits',
-                range: [1, 10]
-            },
-            time: {
-                required: true
-            }
-        }
+        url: "/reservations"
+//        ,
+//        validation: {
+//            name: {
+//                required: true,
+//                minLength: 2,
+//                msg: "Please enter a valid first name"
+//            },
+//            phone: {
+//                required: true,
+//                fn: function (value) {
+//                    var check = value.replace(/[\s\(\)]/g, '');
+//                    if (check.match(/^1?-?(\d{3})?-?\d{3}-?\d{4}$/) === null) {
+//                        return "Please enter a valid phone number"
+//                    }
+//                }
+//            },
+//            guests: {
+//                required: true,
+//                pattern: 'digits',
+//                range: [1, 10]
+//            },
+//            time: {
+//                required: true
+//            }
+//        }
     });
 
     Reservation.FormView = Backbone.View.extend({
         events: {
             'change input[type="text"]': 'changeGenericValue',
+            'change input[type="number"]': 'changeGenericValue',
             'change select': 'changeGenericValue',
             "keypress input[type='text']": 'actOnEnter',
+            "keypress input[type='number']": 'actOnEnter',
             'click .submitButton': 'submitReservationRequest',
             'click .cancelButton': 'cancelReservationRequest'
         },
@@ -109,10 +112,12 @@
 //            if (this.model.isValid()) {
                 this.model.save(this.model,
                     {wait: true,
-                        success: function () {
-                            // TODO What do we do here?
+                        success: function (model, response, options) {
+                            console.log("SUCCESS");
+                            Backbone.history.navigate("/showReservationSuccess/"+model.id,{trigger:true});
                         },
-                        error: function () {
+                        error: function (model, xhr, options) {
+                            console.log("Snap goes the request.");
                             // TODO What do we do here?
                         }
                     }
