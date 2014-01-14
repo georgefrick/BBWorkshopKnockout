@@ -92,7 +92,7 @@
         },
         selectTime:function(event){
             var reservationTime = parseInt(event.currentTarget.getAttribute('value'));
-            var view = new Reservation.FormView({restaurant:this.model.get('id'),reservationTime:reservationTime});
+            var view = new Reservation.FormView({restaurantId:this.model.get('id'),reservationTime:reservationTime});
             this.$('.reservationForm').empty().append(view.render().el);
         }
     });

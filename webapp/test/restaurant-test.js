@@ -21,35 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 /**
- * Created by bpeterson on 1/9/14.
+ * @author jgitter
  */
-
-(function(){
+(function() {
     "use strict";
 
-    $(document).ready(function(){
-        _.extend(Backbone.Model.prototype, Backbone.Validation.mixin);
-        
-        var restaurantView = new RestaurantModule.RestaurantManagerView();
-        var restaurantContent = $("#restaurant-list-main");
-        restaurantContent.empty();
-        restaurantContent.append(restaurantView.render().el);
-
-        new (Backbone.Router.extend({
-            routes: {
-                "restaurant/:id": "selectRestaurant"
-            },
-
-            selectRestaurant: function(id) {
-                restaurantView.selectRestaurant(id);
-            }
-        }))();
-
-        restaurantView.on('ready', function() {
-            Backbone.history.start();
-        });
+    module("Restaurant Module");
+    
+    test("temporary", function() {
+        ok(1===1);
     });
-
 })();

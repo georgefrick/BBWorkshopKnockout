@@ -45,7 +45,7 @@
         return out;
     });
 
-    Handlebars.registerHelper('time', function(millis) {
+    Handlebars.registerHelper('showTime', function(millis) {
         var date = new Date(1 * millis);
         var str = date.toLocaleTimeString("en-US");
         return str.substring(0, 5) + str.substring(8,11);

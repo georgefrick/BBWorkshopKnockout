@@ -4,49 +4,53 @@
                     <h5>The reservation form:</h5>
                     <form>
                         <div class="row">
-                            <div class="large-12 columns">
-                                <h5><label>Selected Time:</label>{{time reservationTime}}</h5>
+                            <div class="large-6 columns">
+                                <h5><label>Selected Time:</label>{{showTime time}}</h5>
+                            </div>
+                            <div class="large-6 columns">
+                                <label>Number of Guests</label>
+                                <input type="number" name="guests" placeholder="#"/>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="large-12 columns">
                                 <label>Name:</label>
-                                <input type="text" placeholder="Enter your full name" />
+                                <input type="text" name="name" placeholder="Enter your full name" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="large-6 medium-6 columns">
                                 <label>Phone:</label>
-                                <input type="text" placeholder="###-###-####" />
+                                <input type="text" name="phone" placeholder="###-###-####" />
                             </div>
                             <div class="large-6 medium-6 columns">
                                 <label>Email:</label>
-                                <input type="text" placeholder="user@domain.ext" />
+                                <input type="text" name="email" placeholder="user@domain.ext" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="large-8 medium-8 columns">
                                 <label>Seating:</label>
-                                <input type="radio" name="pokemon" value="Red" id="pokemonRed"><label for="pokemonRed">No Preference</label>
-                                <input type="radio" name="pokemon" value="Red" id="pokemonRed"><label for="pokemonRed">Outside</label>
-                                <input type="radio" name="pokemon" value="Blue" id="pokemonBlue"><label for="pokemonBlue">Inside</label>
+                                <input type="radio" name="location" value="Red" id="noPreference"><label for="noPreference">No Preference</label>
+                                <input type="radio" name="location" value="Red" id="outside"><label for="outside">Outside</label>
+                                <input type="radio" name="location" value="Blue" id="inside"><label for="inside">Inside</label>
                             </div>
                             <div class="large-4 medium-4 columns">
                                 <label>Other Info:</label>
-                                <input id="checkbox1" type="checkbox"><label for="checkbox1">Special Occasion</label>
+                                <input id="specialOccasion" name="isSpecialOccasion" type="checkbox"><label for="specialOccasion">Special Occasion</label>
                             </div>
                         </div>
                         <div class="row">
                             <div class="large-12 columns">
                                 <label>Special Requests:</label>
-                                <textarea placeholder="Enter any special requests here."></textarea>
+                                <textarea name="specialRequests" placeholder="Enter any special requests here."></textarea>
                             </div>
                         </div>
                         <div class="row">
                             <div class="small-12 medium-12 large-12 small-centered columns">
-                                <a href="#submit" class="small radius button">Make Reservation</a>
-                                <a href="#cancel" class="small radius secondary button">Cancel</a>
+                                <button class="small radius button submitButton">Make Reservation</button>
+                                <button class="small radius secondary button cancelButton">Cancel</button>
                             </div>
 
                         </div>
