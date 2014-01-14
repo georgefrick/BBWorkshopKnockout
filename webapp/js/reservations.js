@@ -43,7 +43,7 @@
                 required: true,
                 fn: function (value) {
                     var check = value.replace(/[\s\(\)]/g, '');
-                    if (check.match(/1?-?(\d{3})?-?\d{3}-?\d{4}/) === null) {
+                    if (check.match(/^1?-?(\d{3})?-?\d{3}-?\d{4}$/) === null) {
                         return "Please enter a valid phone number"
                     }
                 }
