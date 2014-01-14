@@ -25,40 +25,8 @@
 var _ = require("underscore");
 var db = global.db;
 
-var nextRestaurantId = null;
-var getNextRestaurantId = function() {
-    if (nextRestaurantId === null) {
-        var max = 0;
-        db.restaurants.find({}, function(restaurants) {
-            _.each(restaurants, function(restaurant) {
-                if (restaurant.id > max) {
-                    max = restaurant.id;
-                }
-            });
-        });
-        nextRestaurantId = max + 1;
-    }
-    return nextRestaurantId++;
-};
-
-var nextReservationId = null;
-var getNextReservationId = function() {
-    if (nextReservationId === null) {
-        var max = 0;
-        db.reservations.find({}, function(reservations) {
-            _.each(reservations, function(reservation) {
-                if (reservation.id > max) {
-                    max = reservation.id;
-                }
-            });
-        });
-        nextReservationId = max + 1;
-    }
-    return nextReservationId++;
-};
-
 var Restaurant = function(json) {
-    this.id = (json.id !== undefined ? json.id * 1 : getNextRestaurantId());
+    this.id = json.id;
     this.name = json.name || "John Doe";
     this.cuisine = json.cuisine || "Food";
     this.tagline = json.tagline || "";
@@ -69,8 +37,8 @@ var Restaurant = function(json) {
 exports.Restaurant = Restaurant;
 
 var Reservation = function(json) {
-    this.id = (json.id !== undefined ? json.id * 1 : getNextReservationId());
-    this.restaurantId = json.restaurantId * 1;
+    this.id = json.id;
+    this.restaurantId = json.restaurantId;
     this.name = json.name || "";
     this.phone = json.phone || "";
     this.guests = json.guests * 1;
@@ -101,12 +69,16 @@ var validReservationTimes = (function() {
 
 exports.getRestaurantList = function(res) {
     db.restaurants.find({}, function(err, docs) {
+        _.each(docs, function(doc) {
+            doc.id = doc._id;
+        });
         res.send(docs);
     });
 };
 
 exports.getRestaurant = function(res, id) {
     db.restaurants.findOne({ id: id }, function(err, doc) {
+        doc.id = doc._id;
         res.send(doc);
     });
 };
@@ -114,6 +86,7 @@ exports.getRestaurant = function(res, id) {
 exports.createRestaurant = function(res, json) {
     var restaurant = new Restaurant(json);
     db.restaurants.insert(restaurant, function(err, created) {
+        created.id = created._id;
         res.send(created);
     });
 };
@@ -123,20 +96,24 @@ exports.updateRestaurant = function(res, json) {
     db.restaurants.update({ id: restaurant.id }, {
         $set: restaurant
     }, function() {
-        db.restaurants.findOne({ id: restaurant.id }, function(err, doc) {
+        db.restaurants.findOne({ _id: restaurant.id }, function(err, doc) {
+            doc.id = doc._id;
             res.send(doc);
         });
     });
 };
 
 exports.deleteRestaurant = function(res, id) {
-    db.restaurants.remove({ id : id});
+    db.restaurants.remove({ _id : id});
     res.send("Restaurant " + id + " deleted");
 };
 
 exports.getReservationList = function(res, id) {
     db.reservations.find({ restaurantId: id}, function(err, docs) {
         var available = _.difference(validReservationTimes, _.pluck(docs, "time"));
+        _.each(docs, function(doc) {
+            doc.id = doc._id;
+        });
         res.send({
             reservations: docs,
             available: available
@@ -146,6 +123,7 @@ exports.getReservationList = function(res, id) {
 
 exports.getReservation = function(res, id) {
     db.reservations.findOne({ id: id }, function(err, doc) {
+        doc.id = doc._id;
         res.send(doc);
     });
 };
@@ -153,6 +131,7 @@ exports.getReservation = function(res, id) {
 exports.createReservation = function(res, json) {
     var reservation = new Reservation(json);
     db.reservations.insert(reservation, function(err, doc) {
+        doc.id = doc._id;
         res.send(doc);
     });
 }
@@ -163,6 +142,7 @@ exports.updateReservation = function(res, json) {
         $set: reservation
     }, function() {
         db.reservations.findOne({ id: reservation.id }, function(err, doc) {
+            doc.id = doc._id;
             res.send(doc);
         });
     });
