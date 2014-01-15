@@ -117,7 +117,7 @@ addRoutes(reservationServiceRoutes);
 // enable a database reset with a get request
 app.get('/reset', function(req, res) {
     console.log("Resetting Server Data");
-    require('./bootstrap.js');
+    require('./bootstrap.js').reset();
     res.send("Reset Complete");
 });
 
