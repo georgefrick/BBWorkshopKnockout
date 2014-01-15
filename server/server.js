@@ -114,6 +114,13 @@ addRoutes(baseRoutes);
 addRoutes(restaurantServiceRoutes);
 addRoutes(reservationServiceRoutes);
 
+// enable a database reset with a get request
+app.get('/reset', function(req, res) {
+    console.log("Resetting Server Data");
+    require('./bootstrap.js');
+    res.send("Reset Complete");
+});
+
 // start the server
 var port = opts.port;
 if (port === undefined) {
