@@ -28,7 +28,6 @@
     var RestaurantModule = {};
     window.RestaurantModule = RestaurantModule;
 
-    // Insert Model here
     RestaurantModule.Restaurant = Backbone.Model.extend({
         defaults: {
             name: "undefined",
@@ -40,8 +39,46 @@
         urlRoot: "/restaurants"
     });
 
+    /**
+     * View to Render a single Restaurant.
+     * @type {*|void}
+     */
+    RestaurantModule.RestaurantView = Backbone.View.extend({
+        initialize: function () {
+            this.template = Handlebars.templates.restaurant;
+        },
+        render: function () {
+            this.$el.html(this.template(this.model.toJSON()));
+            return this;
+        }
+    });
 
-    // Insert Collection here
+    /**
+     * Main View to Manage the Restaurant List for Reservations.
+     * This view contains subviews in order to allow tighter control.
+     * @type {*|void}
+     */
+    RestaurantModule.RestaurantListView = Backbone.View.extend({
+        initialize: function () {
+            this.template = Handlebars.templates.restaurantListView;
+            this.restaurants = new RestaurantModule.RestaurantList();
+            this.listenTo(this.restaurants, "add", this.addRestaurantView);
+
+            this.restaurants.fetch();
+        },
+        render: function () {
+            this.$el.html(this.template(this));
+            return this;
+        },
+        addRestaurantView: function (restaurant) {
+            var view = new RestaurantModule.RestaurantView({model: restaurant});
+            this.$('.restaurantList').append(view.render().el);
+        },
+        count: function () {
+            return this.restaurants.length;
+        }
+    });
+
     /**
      * Collection of Restaurant models.
      * @type {*|void}
