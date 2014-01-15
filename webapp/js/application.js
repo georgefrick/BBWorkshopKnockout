@@ -33,8 +33,9 @@
 
         var restaurantList = new RestaurantModule.RestaurantList();
         restaurantList.fetch({
-            success:function(data, textStatus, jqXHR){
-                data.each(function(restaurant){
+            success:function(restaurantCollection, textStatus, jqXHR){
+                // Using the Underscore 'each' method proxied by Backbone, append the restaurants from the server.
+                restaurantCollection.each(function(restaurant){
                     $("#restaurant-list-main").append("<div>"+restaurant.get("name")+"</div>");
                 });
             }
