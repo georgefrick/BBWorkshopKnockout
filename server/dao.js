@@ -31,6 +31,7 @@ var Restaurant = function(json) {
     this.cuisine = json.cuisine || "Food";
     this.tagline = json.tagline || "";
     this.description = json.description || "";
+    this.address = json.address || "";
     this.rating = json.rating * 1;
     this.price = json.price * 1;
 };
