@@ -132,6 +132,9 @@
     });
 
     Reservation.View = Backbone.View.extend({
+        events:{
+            'click .reset':'closeReservationView'
+        },
         initialize: function () {
             this.template = Handlebars.templates.reservation;
             this.model = new Reservation.Model();
@@ -145,6 +148,9 @@
         render: function () {
             this.$el.html(this.template(this.model.toJSON()));
             return this;
+        },
+        closeReservationView:function(){
+            Backbone.history.navigate("/",{trigger:true});
         },
         fetchRestaurant:function(){
             this.restaurant.set({id:this.model.get("restaurantId")},{silent:true});
