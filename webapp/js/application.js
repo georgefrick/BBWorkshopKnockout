@@ -31,8 +31,7 @@
 
     $(document).ready(function(){
 
-        // Create new instance of Restaurant List and fetch.
-        var restaurantList; // Create Collection here
+        var restaurantList = new RestaurantModule.RestaurantList();
         restaurantList.fetch({
             success:function(restaurantCollection, textStatus, jqXHR){
                 // Using the Underscore 'each' method proxied by Backbone, append the restaurants from the server.
