@@ -30,70 +30,16 @@
     "use strict";
 
     $(document).ready(function(){
-        var allRestaurantView = new RestaurantModule.RestaurantListView();
 
-        var allRestaurantContent = $("#restaurant-list-main");
-        var singleRestaurantContent = $("#selected-restaurant-main");
-        var reservationResultContent = $("#show-reservation-main");
-
-        allRestaurantContent.empty();
-        allRestaurantContent.append(allRestaurantView.render().el);
-
-        new (Backbone.Router.extend({
-            routes: {
-                "":"showRestaurants",
-                "restaurant/:id": "selectRestaurant",
-                "showReservationSuccess/:id":"showReservationResult"
-            },
-
-            showRestaurants :function() {
-                allRestaurantContent.show();
-                singleRestaurantContent.hide();
-                reservationResultContent.hide();
-            },
-            selectRestaurant: function(id) {
-                var selected = allRestaurantView.getRestaurantById(id);
-                var singleRestaurantView = new RestaurantModule.RestaurantView({model:selected});
-                singleRestaurantContent.empty().append(singleRestaurantView.el);
-                singleRestaurantView.showTimes();
-
-                allRestaurantContent.hide();
-                reservationResultContent.hide();
-                singleRestaurantContent.show();
-            },
-            showReservationResult:function(id){
-                var reservationView = new Reservation.View();
-                reservationResultContent.empty().append(reservationView.el);
-                reservationView.fetchReservation(id);
-                
-                allRestaurantContent.hide();
-                singleRestaurantContent.hide();
-                reservationResultContent.show();
+        var restaurantList = new RestaurantModule.RestaurantList();
+        restaurantList.fetch({
+            success:function(data, textStatus, jqXHR){
+                data.each(function(restaurant){
+                    $("#restaurant-list-main").append("<div>"+restaurant.get("name")+"</div>");
+                });
             }
-        }))();
-
-        allRestaurantView.on('ready', function() {
-            Backbone.history.start();
-        });
+        })
     });
 
-    // Extend backbone to find our error-box and show errors.
-    _.extend(Backbone.Validation.callbacks, {
-        valid: function (view, attr, selector) {
-            view.$('[' + selector + '=' + attr + ']').removeClass('invalid');
-            // remove from the list; and if empty; hide it.
-            view.$('.error-box').find('li[name=' + attr + ']').remove();
-            if (view.$('.error-box').find('ul li').length == 0) {
-                view.$('.error-box').hide();
-            }
-        },
-        invalid: function (view, attr, error, selector) {
-            view.$('[' + selector + '=' + attr + ']').addClass('invalid');
-            // show container, add to list (with name!).
-            view.$('.error-box').find('li[name=' + attr + ']').remove();
-            view.$('.error-box').show().find('.error-list').append(
-                '<li name="' + attr + '">' + error + '</li>');
-        }
-    });
 
 })();
