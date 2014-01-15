@@ -67,7 +67,10 @@
                 singleRestaurantContent.hide();
                 reservationResultContent.show();
                 // TODO Need to clean this up :) BDP
-                alert("Successfully created reservation"+id);
+                var reservationView = new Reservation.View();
+                reservationResultContent.empty().append(reservationView.el);
+                reservationView.fetchReservation(id);
+//                alert("Successfully created reservation"+id);
             }
         }))();
 

@@ -1,6 +1,23 @@
-<div class="reservation">
-    <div><label>Name: </label><span>{{ name }}</span></div>
-    <div><label>Phone Number: </label><span>{{ phone }}</span></div>
-    <div><label># of Guests: </label><span>{{ guests }}</span></div>
-    <div><label>Time: </label><span>{{ time }}</span></div>
+<div class="row">
+    <div class="large-12 columns">
+        <div class="callout panel">
+            <div class="row">
+                <h4>Reservation successfully created for:</h4>
+            <p><strong>{{restaurantName}}</strong></p>
+                <div class="large-6 medium-12 small-12 columns">
+                    <label>Name: </label><span>{{ name }}</span>
+                </div>
+                <div class="large-6 medium-12 small-12 columns">
+                    <label>Phone Number: </label><span>{{ phone }}</span>
+                </div>
+                <div class="large-6 medium-12 small-12 columns">
+                    <label># of Guests: </label><span>{{ guests }}</span>
+                </div>
+                <div class="large-6 medium-12 small-12 columns">
+                    <label>Time: </label><span>{{showTime time }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+

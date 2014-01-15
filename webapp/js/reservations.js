@@ -31,8 +31,8 @@
     window.Reservation = Reservation;
 
     Reservation.Model = Backbone.Model.extend({
-        urlRoot: "/reservations",
-        url: "/reservations"
+        urlRoot: "/reservations"
+//        url: "/reservations"
 //        ,
 //        validation: {
 //            name: {
@@ -135,10 +135,43 @@
         initialize: function () {
             this.template = Handlebars.templates.reservation;
             this.model = new Reservation.Model();
+            this.restaurant = new RestaurantModule.Restaurant();
+
+            this.listenTo(this.model,"sync",this.fetchRestaurant);
+            this.listenTo(this.model,"change",this.render);
+            _.bindAll(this,"fetchRestaurantSuccess");
+            _.bindAll(this,"fetchReservationSuccess");
         },
         render: function () {
             this.$el.html(this.template(this.model.toJSON()));
             return this;
+        },
+        fetchRestaurant:function(){
+            this.restaurant.set({id:this.model.get("restaurantId")},{silent:true});
+            this.restaurant.fetch({
+                success: this.fetchRestaurantSuccess,
+                error: function (model, xhr, options) {
+                    console.log("Snap goes the request.");
+                    // TODO What do we do here?
+                }
+            });
+        },
+        fetchRestaurantSuccess:function(model, response, options) {
+            this.model.set({restaurantName:model.get('name')});
+        },
+        fetchReservationSuccess:function(model, response, options) {
+            this.restaurant.set({id:model.get("restaurantId")});
+        },
+        fetchReservation:function(reservationId){
+            this.model.set({id:reservationId},{silent:true});
+            this.model.fetch({
+                    success: this.fetchReservationSuccess,
+                    error: function (model, xhr, options) {
+                        console.log("Snap goes the request.");
+                        // TODO What do we do here?
+                    }
+                }
+            );
         }
     });
 })();
