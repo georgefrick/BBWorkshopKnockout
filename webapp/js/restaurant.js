@@ -29,27 +29,9 @@
     window.RestaurantModule = RestaurantModule;
 
 // Insert Model here
-    RestaurantModule.Restaurant = Backbone.Model.extend({
-        defaults: {
-            name: "undefined",
-            location: "",
-            reservations: [],
-            availableTimes: [],
-            selected: false
-        },
-        urlRoot: "/restaurants"
-    });
 
 
     // Insert Collection here
-    /**
-     * Collection of Restaurant models.
-     * @type {*|void}
-     */
-    RestaurantModule.RestaurantList = Backbone.Collection.extend({
-        model: RestaurantModule.Restaurant,
-        url: "/restaurants"
-    });
 
 
     return RestaurantModule;
