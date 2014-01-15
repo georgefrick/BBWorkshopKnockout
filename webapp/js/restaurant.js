@@ -36,7 +36,22 @@
             availableTimes: [],
             selected: false
         },
-        urlRoot: "/restaurants"
+        urlRoot: "/restaurants",
+        fetchReservations: function () {
+            $.ajax('/restaurants/' + this.get('id') + '/reservations', {
+                context: this,
+                success: function (response) {
+                    this.set({
+                        'reservations': response.reservations,
+                        'availableTimes': response.available
+                    });
+                    this.trigger('fetchComplete');
+                },
+                failure: function () {
+                    console.log(['Something strange is afoot', arguments]);
+                }
+            });
+        }
     });
 
     /**
@@ -44,12 +59,31 @@
      * @type {*|void}
      */
     RestaurantModule.RestaurantView = Backbone.View.extend({
+        defaults: {
+            selected: false
+        },
+        events: {
+            'click .availableTime': 'selectTime'
+        },
         initialize: function () {
             this.template = Handlebars.templates.restaurant;
+            this.listenTo(this.model, 'fetchComplete', this.render);
         },
         render: function () {
             this.$el.html(this.template(this.model.toJSON()));
+            if (this.selected) {
+                this.$el.find(".availableTimes").html(this.availableTimes.render().el);
+            }
             return this;
+        },
+        showTimes: function () {
+            this.selected = true;
+            this.availableTimes = new RestaurantModule.TimeSlotView({model: this.model});
+            this.model.fetchReservations();
+        },
+        selectTime: function (event) {
+            var reservationTime = parseInt(event.currentTarget.getAttribute('value'));
+            console.log("selected time: " + reservationTime);
         }
     });
 
@@ -64,7 +98,10 @@
             this.restaurants = new RestaurantModule.RestaurantList();
             this.listenTo(this.restaurants, "add", this.addRestaurantView);
 
-            this.restaurants.fetch();
+            _.bindAll(this, "fireReadyEvent");
+            this.restaurants.fetch({
+                success: this.fireReadyEvent
+            });
         },
         render: function () {
             this.$el.html(this.template(this));
@@ -76,6 +113,12 @@
         },
         count: function () {
             return this.restaurants.length;
+        },
+        fireReadyEvent: function () {
+            this.trigger('ready');
+        },
+        getRestaurantById: function (id) {
+            return this.restaurants.get(id);
         }
     });
 
@@ -88,6 +131,15 @@
         url: "/restaurants"
     });
 
+    RestaurantModule.TimeSlotView = Backbone.View.extend({
+        initialize: function (options) {
+            this.template = Handlebars.templates.availableTimes;
+        },
+        render: function () {
+            this.$el.html(this.template(this.model.toJSON()));
+            return this;
+        }
+    })
 
     return RestaurantModule;
 })();

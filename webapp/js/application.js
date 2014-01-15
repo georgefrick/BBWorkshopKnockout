@@ -34,9 +34,36 @@
 
         // Append the newly created Restaurant List view.
         var allRestaurantContent = $("#restaurant-list-main");
+        var singleRestaurantContent = $("#selected-restaurant-main");
+
         allRestaurantContent.empty();
         allRestaurantContent.append(allRestaurantView.render().el);
 
+        new (Backbone.Router.extend({
+            routes: {
+                "":"showRestaurants",
+                "restaurant/:id": "selectRestaurant"
+            },
+
+            showRestaurants :function() {
+                allRestaurantContent.show();
+                singleRestaurantContent.hide();
+            },
+            selectRestaurant: function(id) {
+                var selected = allRestaurantView.getRestaurantById(id);
+                var singleRestaurantView = new RestaurantModule.RestaurantView({model:selected});
+                singleRestaurantContent.empty().append(singleRestaurantView.el);
+                singleRestaurantView.showTimes();
+
+                allRestaurantContent.hide();
+                singleRestaurantContent.show();
+            }
+        }))();
+
+        allRestaurantView.on('ready', function() {
+            Backbone.history.start();
+        });
     });
+
 
 })();
