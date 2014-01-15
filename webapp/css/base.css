@@ -14,3 +14,18 @@ body.restaurant {
     color: #f2821e;
     font-family: Georgia, Times, "Times New Roman", serif;
 }
+
+.error-box {
+    color: red;
+}
+
+.error-box ul {
+    list-style-type: none;
+}
+
+input[type="text"].invalid,
+input[type="number"].invalid {
+    border: 2px solid red;
+    background: yellow;
+    font-size: 1.1em;
+}

@@ -1,60 +1,62 @@
-<div class="row" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
-            <div class="large-12 columns">
-                <div class="panel">
-                    <h5>The reservation form:</h5>
-                    <form>
-                        <div class="row">
-                            <div class="large-6 columns">
-                                <h5><label>Selected Time:</label>{{showTime time}}</h5>
-                            </div>
-                            <div class="large-6 columns">
-                                <label>Number of Guests</label>
-                                <input type="number" name="guests" placeholder="#"/>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="large-12 columns">
-                                <label>Name:</label>
-                                <input type="text" name="name" placeholder="Enter your full name" />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="large-6 medium-6 columns">
-                                <label>Phone:</label>
-                                <input type="text" name="phone" placeholder="###-###-####" />
-                            </div>
-                            <div class="large-6 medium-6 columns">
-                                <label>Email:</label>
-                                <input type="text" name="email" placeholder="user@domain.ext" />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="large-8 medium-8 columns">
-                                <label>Seating:</label>
-                                <input type="radio" name="location" value="Red" id="noPreference"><label for="noPreference">No Preference</label>
-                                <input type="radio" name="location" value="Red" id="outside"><label for="outside">Outside</label>
-                                <input type="radio" name="location" value="Blue" id="inside"><label for="inside">Inside</label>
-                            </div>
-                            <div class="large-4 medium-4 columns">
-                                <label>Other Info:</label>
-                                <input id="specialOccasion" name="isSpecialOccasion" type="checkbox"><label for="specialOccasion">Special Occasion</label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="large-12 columns">
-                                <label>Special Requests:</label>
-                                <textarea name="specialRequests" placeholder="Enter any special requests here."></textarea>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="small-12 medium-12 large-12 small-centered columns">
-                                <button class="small radius button submitButton">Make Reservation</button>
-                                <button class="small radius secondary button cancelButton">Cancel</button>
-                            </div>
-
-                        </div>
-                    </form>
+<div class="row">
+    <div class="large-12 columns">
+        <div class="panel">
+            <h5>The reservation form:</h5>
+            <form>
+                <div class="row">
+                    <div class="large-6 columns">
+                        <h5><label>Selected Time:</label>{{showTime time}}</h5>
+                    </div>
+                    <div class="large-6 columns">
+                        <label>Number of Guests</label>
+                        <input type="number" name="guests" placeholder="#"/>
+                    </div>
                 </div>
+
+                <div class="row">
+                    <div class="large-12 columns">
+                        <label>Name:</label>
+                        <input type="text" name="name" placeholder="Enter your full name" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="large-6 medium-6 columns">
+                        <label>Phone:</label>
+                        <input type="text" name="phone" placeholder="###-###-####" />
+                    </div>
+                    <div class="large-6 medium-6 columns">
+                        <label>Email:</label>
+                        <input type="text" name="email" placeholder="user@domain.ext" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="large-8 medium-8 columns">
+                        <label>Seating:</label>
+                        <input type="radio" name="location" value="Red" id="noPreference"><label for="noPreference">No Preference</label>
+                        <input type="radio" name="location" value="Red" id="outside"><label for="outside">Outside</label>
+                        <input type="radio" name="location" value="Blue" id="inside"><label for="inside">Inside</label>
+                    </div>
+                    <div class="large-4 medium-4 columns">
+                        <label>Other Info:</label>
+                        <input id="specialOccasion" name="isSpecialOccasion" type="checkbox"><label for="specialOccasion">Special Occasion</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="large-12 columns">
+                        <label>Special Requests:</label>
+                        <textarea name="specialRequests" placeholder="Enter any special requests here."></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="small-12 medium-12 large-12 small-centered columns">
+                        <button class="small radius button submitButton">Make Reservation</button>
+                        <button class="small radius secondary button cancelButton">Cancel</button>
+                    </div>
+                </div>
+            </form>
+            <div class="error-box">
+                <ul class="error-list"></ul>
             </div>
         </div>
+    </div>
+</div>

@@ -40,17 +40,21 @@
         });
     };
 
-    test("reservation-validation", function() {
-        expect(15);
-
+    test("name-validation", function() {
+        expect(2);
+        
         var reservation = getReservation();
         ok(reservation.isValid(true), "Check valid model");
 
         reservation = getReservation();
         reservation.set('name', 'A');
         ok(reservation.isValid(true) === false, "Name is too short");
+    });
 
-        reservation = getReservation();
+    test("guests-validation", function() {
+        expect(4);
+
+        var reservation = getReservation();
         reservation.set('guests', 0);
         ok(reservation.isValid(true) === false, "Guests must be greater than or equal to 1");
 
@@ -62,12 +66,20 @@
 
         reservation.set('guests', 11);
         ok(reservation.isValid(true) === false, "Guests must be less than or equal to 10");
+    });
 
-        reservation = getReservation();
+    test("time-validation", function() {
+        expect(1);
+
+        var reservation = getReservation();
         reservation.unset('time');
         ok(reservation.isValid(true) === false, "Time is required");
+    });
 
-        reservation = getReservation();
+    test("phone-validation", function() {
+        expect(8);
+
+        var reservation = getReservation();
         reservation.set('phone', '123-123-1234');
         ok(reservation.isValid(true), "Check valid phone number formats");
 

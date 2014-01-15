@@ -31,33 +31,33 @@
     window.Reservation = Reservation;
 
     Reservation.Model = Backbone.Model.extend({
-        urlRoot: "/reservations"
-//        url: "/reservations"
-//        ,
-//        validation: {
-//            name: {
-//                required: true,
-//                minLength: 2,
-//                msg: "Please enter a valid first name"
-//            },
-//            phone: {
-//                required: true,
-//                fn: function (value) {
-//                    var check = value.replace(/[\s\(\)]/g, '');
-//                    if (check.match(/^1?-?(\d{3})?-?\d{3}-?\d{4}$/) === null) {
-//                        return "Please enter a valid phone number"
-//                    }
-//                }
-//            },
-//            guests: {
-//                required: true,
-//                pattern: 'digits',
-//                range: [1, 10]
-//            },
-//            time: {
-//                required: true
-//            }
-//        }
+        urlRoot: "/reservations",
+        validation: {
+            name: {
+                required: true,
+                minLength: 2,
+                msg: "Please enter a valid first name"
+            },
+            phone: {
+                required: true,
+                fn: function (value) {
+                    if (value !== undefined) {
+                        var check = value.replace(/[\s\(\)]/g, '');
+                        if (check.match(/^1?-?(\d{3})?-?\d{3}-?\d{4}$/) === null) {
+                            return "Please enter a valid phone number"
+                        }
+                    }
+                }
+            },
+            guests: {
+                required: true,
+                pattern: 'digits',
+                range: [1, 10]
+            },
+            time: {
+                required: true
+            }
+        }
     });
 
     Reservation.FormView = Backbone.View.extend({
@@ -77,9 +77,7 @@
                 time: options.reservationTime
             });
 
-            this.model.get('restaurant');
-
-//            Backbone.Validation.bind(this);
+            Backbone.Validation.bind(this);
         },
         render: function () {
             this.$el.html(this.template(this.model.toJSON()));
@@ -89,12 +87,8 @@
             var sValue = $(event.currentTarget).val();
             var sName = $(event.currentTarget).attr("name");
 
-            // This creates a data binding to the model based on the attributes name/value pair.
-            var temp = {};
-            temp[sName] = sValue;
-
             // Update the model but don't cause any change event.
-            this.model.set(temp, {silent: true});
+            this.model.set(sName, sValue, { silent: true });
         },
         actOnEnter: function (event) {
             if (event.keyCode != 13) {
@@ -108,21 +102,18 @@
             this.changeGenericValue(event);
         },
         submitReservationRequest: function () {
-//            var validationResults = this.model.validate();
-//            if (this.model.isValid()) {
-                this.model.save(this.model,
-                    {wait: true,
-                        success: function (model, response, options) {
-                            console.log("SUCCESS");
-                            Backbone.history.navigate("/showReservationSuccess/"+model.id,{trigger:true});
-                        },
-                        error: function (model, xhr, options) {
-                            console.log("Snap goes the request.");
-                            // TODO What do we do here?
-                        }
+            var validationResults = this.model.validate();
+            if (this.model.isValid()) {
+                this.model.save(null, {
+                    success: function (model, response, options) {
+                        console.log("SUCCESS");
+                        Backbone.history.navigate("showReservationSuccess/" + model.id, { trigger:true });
+                    },
+                    error: function (model, xhr, options) {
+                        console.log("Snap goes the request.");
                     }
-                );
-//            }
+                });
+            }
             return false;
         },
         cancelReservationRequest: function () {
@@ -150,7 +141,7 @@
             return this;
         },
         closeReservationView:function(){
-            Backbone.history.navigate("/",{trigger:true});
+            Backbone.history.navigate("", { trigger: true });
         },
         fetchRestaurant:function(){
             this.restaurant.set({id:this.model.get("restaurantId")},{silent:true});

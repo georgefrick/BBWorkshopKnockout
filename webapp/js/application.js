@@ -30,7 +30,6 @@
     "use strict";
 
     $(document).ready(function(){
-        _.extend(Backbone.Model.prototype, Backbone.Validation.mixin);
         var allRestaurantView = new RestaurantModule.RestaurantListView();
 
         var allRestaurantContent = $("#restaurant-list-main");
@@ -53,30 +52,48 @@
                 reservationResultContent.hide();
             },
             selectRestaurant: function(id) {
-                allRestaurantContent.hide();
-                singleRestaurantContent.show();
-                reservationResultContent.hide();
-
                 var selected = allRestaurantView.getRestaurantById(id);
                 var singleRestaurantView = new RestaurantModule.RestaurantView({model:selected});
                 singleRestaurantContent.empty().append(singleRestaurantView.el);
                 singleRestaurantView.showTimes();
+
+                allRestaurantContent.hide();
+                reservationResultContent.hide();
+                singleRestaurantContent.show();
             },
             showReservationResult:function(id){
-                allRestaurantContent.hide();
-                singleRestaurantContent.hide();
-                reservationResultContent.show();
-                // TODO Need to clean this up :) BDP
                 var reservationView = new Reservation.View();
                 reservationResultContent.empty().append(reservationView.el);
                 reservationView.fetchReservation(id);
-//                alert("Successfully created reservation"+id);
+                
+                allRestaurantContent.hide();
+                singleRestaurantContent.hide();
+                reservationResultContent.show();
             }
         }))();
 
         allRestaurantView.on('ready', function() {
             Backbone.history.start();
         });
+    });
+
+    // Extend backbone to find our error-box and show errors.
+    _.extend(Backbone.Validation.callbacks, {
+        valid: function (view, attr, selector) {
+            view.$('[' + selector + '=' + attr + ']').removeClass('invalid');
+            // remove from the list; and if empty; hide it.
+            view.$('.error-box').find('li[name=' + attr + ']').remove();
+            if (view.$('.error-box').find('ul li').length == 0) {
+                view.$('.error-box').hide();
+            }
+        },
+        invalid: function (view, attr, error, selector) {
+            view.$('[' + selector + '=' + attr + ']').addClass('invalid');
+            // show container, add to list (with name!).
+            view.$('.error-box').find('li[name=' + attr + ']').remove();
+            view.$('.error-box').show().find('.error-list').append(
+                '<li name="' + attr + '">' + error + '</li>');
+        }
     });
 
 })();
