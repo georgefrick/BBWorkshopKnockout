@@ -35,7 +35,6 @@
         // Append the newly created Restaurant List view.
         var allRestaurantContent = $("#restaurant-list-main");
         var singleRestaurantContent = $("#selected-restaurant-main");
-        var reservationResultContent = $("#show-reservation-main");
 
         allRestaurantContent.empty();
         allRestaurantContent.append(allRestaurantView.render().el);
@@ -49,7 +48,6 @@
             showRestaurants :function() {
                 allRestaurantContent.show();
                 singleRestaurantContent.hide();
-                reservationResultContent.hide();
             },
             selectRestaurant: function(id) {
                 var selected = allRestaurantView.getRestaurantById(id);
@@ -58,17 +56,7 @@
                 singleRestaurantView.showTimes();
 
                 allRestaurantContent.hide();
-                reservationResultContent.hide();
                 singleRestaurantContent.show();
-            },
-            showReservationResult:function(id){
-                var reservationView = new Reservation.View();
-                reservationResultContent.empty().append(reservationView.el);
-                reservationView.fetchReservation(id);
-
-                allRestaurantContent.hide();
-                singleRestaurantContent.hide();
-                reservationResultContent.show();
             }
         }))();
 
