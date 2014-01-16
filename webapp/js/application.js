@@ -43,7 +43,7 @@
             routes: {
                 "":"showRestaurants",
                 "restaurant/:id": "selectRestaurant",
-                "showReservationSuccess/:id":"showReservationResult"
+                "reservation/:id":"showReservationResult"
             },
 
             showRestaurants :function() {
