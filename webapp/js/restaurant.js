@@ -72,7 +72,7 @@
         render: function () {
             if (this.formView) {
                 this.$el.find('.reservationForm').detach();
-                this.formView=undefined;
+                this.formView = undefined;
             }
 
             this.$el.html(this.template(this.model.toJSON()));

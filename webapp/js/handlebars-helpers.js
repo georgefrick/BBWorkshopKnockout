@@ -24,10 +24,10 @@
 /**
  * jgitter 1-13-2014
  */
- (function() {
+(function () {
     "use strict";
 
-    Handlebars.registerHelper('showPrice', function(price) {
+    Handlebars.registerHelper('showPrice', function (price) {
         var index, out = "";
         for (index = 1; index <= price; index++) {
             out += "$";
@@ -36,7 +36,7 @@
         return out;
     });
 
-    Handlebars.registerHelper('showRating', function(rating) {
+    Handlebars.registerHelper('showRating', function (rating) {
         var index, out = "";
         for (index = 1; index <= Math.round(rating / 20); index++) {
             out += "*";
@@ -45,9 +45,9 @@
         return out;
     });
 
-    Handlebars.registerHelper('showTime', function(millis) {
+    Handlebars.registerHelper('showTime', function (millis) {
         var date = new Date(1 * millis);
         var str = date.toLocaleTimeString("en-US");
-        return str.substring(0, 5) + str.substring(8,11);
+        return str.substring(0, 5) + str.substring(8, 11);
     });
 })();

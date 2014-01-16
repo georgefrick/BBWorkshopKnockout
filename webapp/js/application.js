@@ -26,10 +26,10 @@
  * Created by bpeterson on 1/9/14.
  */
 
-(function(){
+(function () {
     "use strict";
 
-    $(document).ready(function(){
+    $(document).ready(function () {
         var allRestaurantView = new RestaurantModule.RestaurantListView();
 
         var allRestaurantContent = $("#restaurant-list-main");
@@ -41,19 +41,19 @@
 
         new (Backbone.Router.extend({
             routes: {
-                "":"showRestaurants",
+                "": "showRestaurants",
                 "restaurant/:id": "selectRestaurant",
-                "reservation/:id":"showReservationResult"
+                "reservation/:id": "showReservationResult"
             },
 
-            showRestaurants :function() {
+            showRestaurants: function () {
                 allRestaurantContent.show();
                 singleRestaurantContent.hide();
                 reservationResultContent.hide();
             },
-            selectRestaurant: function(id) {
+            selectRestaurant: function (id) {
                 var selected = allRestaurantView.getRestaurantById(id);
-                var singleRestaurantView = new RestaurantModule.RestaurantView({model:selected});
+                var singleRestaurantView = new RestaurantModule.RestaurantView({model: selected});
                 singleRestaurantContent.empty().append(singleRestaurantView.el);
                 singleRestaurantView.showTimes();
 
@@ -61,7 +61,7 @@
                 reservationResultContent.hide();
                 singleRestaurantContent.show();
             },
-            showReservationResult:function(id){
+            showReservationResult: function (id) {
                 var reservationView = new Reservation.View();
                 reservationResultContent.empty().append(reservationView.el);
                 reservationView.fetchReservation(id);
@@ -72,10 +72,28 @@
             }
         }))();
 
-        allRestaurantView.on('ready', function() {
+        allRestaurantView.on('ready', function () {
             Backbone.history.start();
         });
     });
 
+    // Extend backbone to find our error-box and show errors.
+    _.extend(Backbone.Validation.callbacks, {
+        valid: function (view, attr, selector) {
+            view.$('[' + selector + '=' + attr + ']').removeClass('invalid');
+            // remove from the list; and if empty; hide it.
+            view.$('.error-box').find('li[name=' + attr + ']').remove();
+            if (view.$('.error-box').find('ul li').length == 0) {
+                view.$('.error-box').hide();
+            }
+        },
+        invalid: function (view, attr, error, selector) {
+            view.$('[' + selector + '=' + attr + ']').addClass('invalid');
+            // show container, add to list (with name!).
+            view.$('.error-box').find('li[name=' + attr + ']').remove();
+            view.$('.error-box').show().find('.error-list').append(
+                '<li name="' + attr + '">' + error + '</li>');
+        }
+    });
 
 })();
