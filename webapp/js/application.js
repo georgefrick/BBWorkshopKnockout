@@ -31,11 +31,15 @@
 
     $(document).ready(function(){
 
-        // Create new instance of Restaurant List and fetch.
-        var restaurantList; // Create Collection here
-
-        // Fetch Restaurant Collection and place each restaurant detail into the $("#restaurant-list-main") element.
-
+        var restaurantList = new RestaurantModule.RestaurantList();
+        restaurantList.fetch({
+            success:function(restaurantCollection, textStatus, jqXHR){
+                // Using the Underscore 'each' method proxied by Backbone, append the restaurants from the server.
+                restaurantCollection.each(function(restaurant){
+                    $("#restaurant-list-main").append("<div>"+restaurant.get("name")+"</div>");
+                });
+            }
+        })
     });
 
 
