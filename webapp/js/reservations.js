@@ -107,7 +107,7 @@
                 this.model.save(null, {
                     success: function (model, response, options) {
                         console.log("SUCCESS");
-                        Backbone.history.navigate("showReservationSuccess/" + model.id, { trigger:true });
+                        Backbone.history.navigate("reservation/" + model.id, { trigger:true });
                     },
                     error: function (model, xhr, options) {
                         console.log("Snap goes the request.");
