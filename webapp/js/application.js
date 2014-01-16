@@ -26,21 +26,17 @@
  * Created by bpeterson on 1/9/14.
  */
 
-(function(){
+(function () {
     "use strict";
 
-    $(document).ready(function(){
+    $(document).ready(function () {
+        var allRestaurantView = new RestaurantModule.RestaurantListView();
 
-        var restaurantList = new RestaurantModule.RestaurantList();
-        restaurantList.fetch({
-            success:function(restaurantCollection, textStatus, jqXHR){
-                // Using the Underscore 'each' method proxied by Backbone, append the restaurants from the server.
-                restaurantCollection.each(function(restaurant){
-                    $("#restaurant-list-main").append("<div>"+restaurant.get("name")+"</div>");
-                });
-            }
-        })
+        // Append the newly created Restaurant List view.
+        var allRestaurantContent = $("#restaurant-list-main");
+        allRestaurantContent.empty();
+        allRestaurantContent.append(allRestaurantView.render().el);
+
     });
-
 
 })();
