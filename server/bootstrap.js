@@ -28,25 +28,24 @@
  * This is a standalone script not used by the server.  It will reset the database to it's initial state.
  */
 
-var DB = require('nedb');
-var db = {};
-db.restaurants = new DB({
-    filename: './server/restaurants.db',
-    autoload: true
-});
-db.reservations = new DB({
-    filename: './server/reservations.db',
-    autoload: true
-});
+var db = global.db;
+if (!db) {
+    var DB = require('nedb');
+    db = {};
+    db.restaurants = new DB({
+        filename: './server/restaurants.db',
+        autoload: true
+    });
+    db.reservations = new DB({
+        filename: './server/reservations.db',
+        autoload: true
+    });
+}
 
 var Restaurant = require('./dao.js').Restaurant;
 
-db.restaurants.remove({}, { multi: true });
-db.reservations.remove({}, { multi: true });
-
 var restaurants = [
     new Restaurant({
-        id: 1,
         name: "Bartolotta's Lake Park Bistro",
         cuisine: "French",
         address: "3133 E Newberry Blvd",
@@ -55,7 +54,6 @@ var restaurants = [
         rating: 83,
         price: 4
     }), new Restaurant({
-        id: 2,
         name: "Sanford",
         cuisine: "American",
         address: "1547 N Jackson St",
@@ -63,7 +61,6 @@ var restaurants = [
         rating: 88,
         price: 4
     }), new Restaurant({
-        id: 3,
         name: "Eddie Martini's",
         cuisine: "Steakhouse",
         address: "8612 W Watertown Plank Rd",
@@ -72,7 +69,6 @@ var restaurants = [
         rating: 83,
         price: 4
     }), new Restaurant({
-        id: 4,
         name: "Hinterland Erie Street Gastropub",
         cuisine: "Gastropub",
         address: "222 E Erie St",
@@ -81,7 +77,6 @@ var restaurants = [
         rating: 86,
         price: 4
     }), new Restaurant({
-        id: 5,
         name: "Kil@Wat",
         cuisine: "Asian",
         address: "139 E Kilbourn Ave",
@@ -90,7 +85,6 @@ var restaurants = [
         rating: 86,
         price: 4
     }), new Restaurant({
-        id: 6,
         name: "Zarletti",
         cuisine: "Italian",
         address: "741 N Milwaukee St",
@@ -99,7 +93,6 @@ var restaurants = [
         rating: 89,
         price: 4
     }), new Restaurant({
-        id: 7,
         name: "Mader's",
         cuisine: "German",
         address: "1041 N Old World 3rd St",
@@ -108,7 +101,6 @@ var restaurants = [
         rating: 75,
         price: 4
     }), new Restaurant({
-        id: 8,
         name: "Shogun",
         cuisine: "Sushi",
         address: "518 College Ave",
@@ -116,7 +108,6 @@ var restaurants = [
         rating: 81,
         price: 4
     }), new Restaurant({
-        id: 9,
         name: "Harbor House",
         cuisine: "Seafood",
         address: "550 Harbor Dr",
@@ -125,7 +116,6 @@ var restaurants = [
         rating: 78,
         price: 4
     }), new Restaurant({
-        id: 10,
         name: "Carson's Ribs",
         cuisine: "Barbecue",
         address: "1141 N Old World 3rd St",
@@ -136,4 +126,17 @@ var restaurants = [
     })
 ];
 
-db.restaurants.insert(restaurants);
+
+var reset = function() {
+    db.restaurants.remove({}, { multi: true });
+    db.reservations.remove({}, { multi: true });
+
+    db.restaurants.insert(restaurants);
+
+    db.restaurants.persistence.compactDatafile();
+    db.reservations.persistence.compactDatafile();
+}
+
+reset();
+
+exports.reset = reset;

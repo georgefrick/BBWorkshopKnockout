@@ -31,6 +31,7 @@ var Restaurant = function(json) {
     this.cuisine = json.cuisine || "Food";
     this.tagline = json.tagline || "";
     this.description = json.description || "";
+    this.address = json.address || "";
     this.rating = json.rating * 1;
     this.price = json.price * 1;
 };
@@ -78,8 +79,8 @@ exports.getRestaurantList = function(res) {
 
 exports.getRestaurant = function(res, id) {
     db.restaurants.findOne({ _id: id }, function(err, doc) {
-        doc.id = doc._id;
-        res.send(doc);
+        if (doc) doc.id = doc._id;
+        res.send(doc || undefined);
     });
 };
 
@@ -93,12 +94,12 @@ exports.createRestaurant = function(res, json) {
 
 exports.updateRestaurant = function(res, json) {
     var restaurant = new Restaurant(json);
-    db.restaurants.update({ id: restaurant.id }, {
+    db.restaurants.update({ _id: restaurant.id }, {
         $set: restaurant
     }, function() {
         db.restaurants.findOne({ _id: restaurant.id }, function(err, doc) {
-            doc.id = doc._id;
-            res.send(doc);
+            if (doc) doc.id = doc._id;
+            res.send(doc || undefined);
         });
     });
 };
@@ -123,27 +124,28 @@ exports.getReservationList = function(res, id) {
 
 exports.getReservation = function(res, id) {
     db.reservations.findOne({ _id: id }, function(err, doc) {
-        doc.id = doc._id;
-        res.send(doc);
+        if (doc) doc.id = doc._id;
+        res.send(doc || undefined);
     });
 };
 
 exports.createReservation = function(res, json) {
     var reservation = new Reservation(json);
     db.reservations.insert(reservation, function(err, doc) {
-        doc.id = doc._id;
-        res.send(doc);
+        if (doc) doc.id = doc._id;
+        res.send(doc || undefined);
     });
 }
 
 exports.updateReservation = function(res, json) {
     var reservation = new Reservation(json);
+
     db.reservations.update({ _id: reservation.id }, {
         $set: reservation
     }, function() {
         db.reservations.findOne({ _id: reservation.id }, function(err, doc) {
-            doc.id = doc._id;
-            res.send(doc);
+            if (doc) doc.id = doc._id;
+            res.send(doc || undefined);
         });
     });
 };

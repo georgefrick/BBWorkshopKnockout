@@ -22,140 +22,17 @@
  * THE SOFTWARE.
  */
 
-/**
- * Created by bpeterson on 1/9/14.
- */
-
 (function () {
     "use strict";
 
     var RestaurantModule = {};
     window.RestaurantModule = RestaurantModule;
 
-    /**
-     * Model to define a Restaurant
-     * @type {*|void}
-     */
-    RestaurantModule.Restaurant = Backbone.Model.extend({
-        defaults: {
-            name: "undefined",
-            location: "",
-            reservations: [],
-            availableTimes: [],
-            selected: false
-        },
-        urlRoot: "/restaurants",
-        fetchReservations: function () {
-            $.ajax('/restaurants/' + this.get('id') + '/reservations', {
-                context: this,
-                success: function (response) {
-                    this.set({
-                        'reservations': response.reservations,
-                        'availableTimes': response.available
-                    });
-                    this.trigger('fetchComplete');
-                },
-                failure: function () {
-                    console.log(['Something strange is afoot', arguments]);
-                }
-            });
-        }
-    });
+    // Insert Model here
 
-    /**
-     * View to Render a single Restaurant.
-     * @type {*|void}
-     */
-    RestaurantModule.RestaurantView = Backbone.View.extend({
-        defaults: {
-            formView: undefined,
-            selected:false
-        },
-        events: {
-            'click .availableTime': 'selectTime'
-        },
-        initialize: function () {
-            this.template = Handlebars.templates.restaurant;
-            this.listenTo(this.model, 'fetchComplete', this.render);
-        },
-        render: function () {
-            if (this.formView) {
-                this.$el.find('.reservationForm').detach();
-                this.formView=undefined;
-            }
 
-            this.$el.html(this.template(this.model.toJSON()));
-            if (this.selected){
-                this.$el.find(".availableTimes").html(this.availableTimes.render().el);
-            }
-            return this;
-        },
-        showTimes: function(){
-            this.selected=true;
-            this.availableTimes = new RestaurantModule.TimeSlotView({model:this.model});
-            this.model.fetchReservations();
-        },
-        selectTime: function (event) {
-            var reservationTime = parseInt(event.currentTarget.getAttribute('value'));
-            var view = new Reservation.FormView({restaurantId: this.model.get('id'), reservationTime: reservationTime});
-            this.formView = view;
-            this.$('.reservationForm').empty().append(view.render().el);
-        }
-    });
+    // Insert Collection here
 
-    /**
-     * Main View to Manage the Restaurant List for Reservations.
-     * This view contains subviews in order to allow tighter control.
-     * @type {*|void}
-     */
-    RestaurantModule.RestaurantListView = Backbone.View.extend({
-        initialize: function () {
-            this.template = Handlebars.templates.restaurantListView;
-            this.restaurants = new RestaurantModule.RestaurantList();
-            this.listenTo(this.restaurants, "add", this.addRestaurantView);
-
-            _.bindAll(this, "fireReadyEvent");
-            this.restaurants.fetch({
-                success: this.fireReadyEvent
-            });
-        },
-        render: function () {
-            this.$el.html(this.template(this));
-            return this;
-        },
-        addRestaurantView: function (restaurant) {
-            var view = new RestaurantModule.RestaurantView({model: restaurant});
-            this.$('.restaurantList').append(view.render().el);
-        },
-        count: function () {
-            return this.restaurants.length;
-        },
-        fireReadyEvent: function () {
-            this.trigger('ready');
-        },
-        getRestaurantById:function(id){
-            return this.restaurants.get(id);
-        }
-    });
-
-    /**
-     * Collection of Restaurant models.
-     * @type {*|void}
-     */
-    RestaurantModule.RestaurantList = Backbone.Collection.extend({
-        model: RestaurantModule.Restaurant,
-        url: "/restaurants"
-    });
-
-    RestaurantModule.TimeSlotView = Backbone.View.extend({
-        initialize:function(options){
-            this.template = Handlebars.templates.availableTimes;
-        },
-        render:function(){
-            this.$el.html(this.template(this.model.toJSON()));
-            return this;
-        }
-    })
 
     return RestaurantModule;
 })();
