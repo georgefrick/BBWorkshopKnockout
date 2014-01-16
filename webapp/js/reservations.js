@@ -31,33 +31,7 @@
     window.Reservation = Reservation;
 
     Reservation.Model = Backbone.Model.extend({
-        urlRoot: "/reservations",
-        validation: {
-            name: {
-                required: true,
-                minLength: 2,
-                msg: "Please enter a valid first name"
-            },
-            phone: {
-                required: true,
-                fn: function (value) {
-                    if (value !== undefined) {
-                        var check = value.replace(/[\s\(\)]/g, '');
-                        if (check.match(/^1?-?(\d{3})?-?\d{3}-?\d{4}$/) === null) {
-                            return "Please enter a valid phone number"
-                        }
-                    }
-                }
-            },
-            guests: {
-                required: true,
-                pattern: 'digits',
-                range: [1, 10]
-            },
-            time: {
-                required: true
-            }
-        }
+        urlRoot: "/reservations"
     });
 
     Reservation.FormView = Backbone.View.extend({
@@ -77,7 +51,6 @@
                 time: options.reservationTime
             });
 
-            Backbone.Validation.bind(this);
         },
         render: function () {
             this.$el.html(this.template(this.model.toJSON()));
@@ -102,18 +75,16 @@
             this.changeGenericValue(event);
         },
         submitReservationRequest: function () {
-            var validationResults = this.model.validate();
-            if (this.model.isValid()) {
-                this.model.save(null, {
-                    success: function (model, response, options) {
-                        console.log("SUCCESS");
-                        Backbone.history.navigate("showReservationSuccess/" + model.id, { trigger:true });
-                    },
-                    error: function (model, xhr, options) {
-                        console.log("Snap goes the request.");
-                    }
-                });
-            }
+            this.model.save(null, {
+                success: function (model, response, options) {
+                    console.log("SUCCESS");
+                    Backbone.history.navigate("showReservationSuccess/" + model.id, { trigger:true });
+                },
+                error: function (model, xhr, options) {
+                    console.log("Snap goes the request.");
+                }
+            });
+
             return false;
         },
         cancelReservationRequest: function () {
