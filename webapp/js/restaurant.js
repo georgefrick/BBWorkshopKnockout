@@ -59,6 +59,7 @@
      */
     RestaurantModule.RestaurantView = Backbone.View.extend({
         defaults: {
+            formView: undefined,
             selected: false
         },
         events: {
@@ -69,6 +70,11 @@
             this.listenTo(this.model, 'fetchComplete', this.render);
         },
         render: function () {
+            if (this.formView) {
+                this.$el.find('.reservationForm').detach();
+                this.formView=undefined;
+            }
+
             this.$el.html(this.template(this.model.toJSON()));
             if (this.selected) {
                 this.$el.find(".availableTimes").html(this.availableTimes.render().el);
@@ -82,7 +88,9 @@
         },
         selectTime: function (event) {
             var reservationTime = parseInt(event.currentTarget.getAttribute('value'));
-            console.log("selected time: " + reservationTime);
+            var view = new Reservation.FormView({restaurantId: this.model.get('id'), reservationTime: reservationTime});
+            this.formView = view;
+            this.$('.reservationForm').empty().append(view.render().el);
         }
     });
 
