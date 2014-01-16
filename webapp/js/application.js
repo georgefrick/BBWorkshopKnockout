@@ -26,15 +26,15 @@
  * Created by bpeterson on 1/9/14.
  */
 
-(function () {
+(function(){
     "use strict";
 
-    $(document).ready(function () {
+    $(document).ready(function(){
         var allRestaurantView = new RestaurantModule.RestaurantListView();
 
-        // Append the newly created Restaurant List view.
         var allRestaurantContent = $("#restaurant-list-main");
         var singleRestaurantContent = $("#selected-restaurant-main");
+        var reservationResultContent = $("#show-reservation-main");
 
         allRestaurantContent.empty();
         allRestaurantContent.append(allRestaurantView.render().el);
@@ -42,12 +42,14 @@
         new (Backbone.Router.extend({
             routes: {
                 "":"showRestaurants",
-                "restaurant/:id": "selectRestaurant"
+                "restaurant/:id": "selectRestaurant",
+                "reservation/:id":"showReservationResult"
             },
 
             showRestaurants :function() {
                 allRestaurantContent.show();
                 singleRestaurantContent.hide();
+                reservationResultContent.hide();
             },
             selectRestaurant: function(id) {
                 var selected = allRestaurantView.getRestaurantById(id);
@@ -56,7 +58,17 @@
                 singleRestaurantView.showTimes();
 
                 allRestaurantContent.hide();
+                reservationResultContent.hide();
                 singleRestaurantContent.show();
+            },
+            showReservationResult:function(id){
+                var reservationView = new Reservation.View();
+                reservationResultContent.empty().append(reservationView.el);
+                reservationView.fetchReservation(id);
+
+                allRestaurantContent.hide();
+                singleRestaurantContent.hide();
+                reservationResultContent.show();
             }
         }))();
 

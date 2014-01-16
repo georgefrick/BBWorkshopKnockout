@@ -35,6 +35,15 @@
     });
 
     Reservation.FormView = Backbone.View.extend({
+        events: {
+            'change input[type="text"]': 'changeGenericValue',
+            'change input[type="number"]': 'changeGenericValue',
+            'change select': 'changeGenericValue',
+            "keypress input[type='text']": 'actOnEnter',
+            "keypress input[type='number']": 'actOnEnter',
+            'click .submitButton': 'submitReservationRequest',
+            'click .cancelButton': 'cancelReservationRequest'
+        },
         initialize: function (options) {
             this.template = Handlebars.templates.reservationForm;
             this.model = new Reservation.Model({
@@ -46,7 +55,88 @@
         render: function () {
             this.$el.html(this.template(this.model.toJSON()));
             return this;
+        },
+        changeGenericValue: function (event) {
+            var sValue = $(event.currentTarget).val();
+            var sName = $(event.currentTarget).attr("name");
+
+            // Update the model but don't cause any change event.
+            this.model.set(sName, sValue, { silent: true });
+        },
+        actOnEnter: function (event) {
+            if (event.keyCode != 13) {
+                return;
+            }
+
+            // Prevent default enter behavior.
+            event.preventDefault();
+
+            // Make the update to the value as a result of the Enter.
+            this.changeGenericValue(event);
+        },
+        submitReservationRequest: function () {
+            this.model.save(null, {
+                success: function (model, response, options) {
+                    console.log("SUCCESS");
+                    Backbone.history.navigate("reservation/" + model.id, { trigger: true });
+                },
+                error: function (model, xhr, options) {
+                    console.log("Snap goes the request.");
+                }
+            });
+            return false;
+        },
+        cancelReservationRequest: function () {
+            this.remove();
+            return false;
         }
     });
 
+    Reservation.View = Backbone.View.extend({
+        events: {
+            'click .reset': 'closeReservationView'
+        },
+        initialize: function () {
+            this.template = Handlebars.templates.reservation;
+            this.model = new Reservation.Model();
+            this.restaurant = new RestaurantModule.Restaurant();
+
+            this.listenTo(this.model, "sync", this.fetchRestaurant);
+            this.listenTo(this.model, "change", this.render);
+            _.bindAll(this, "fetchRestaurantSuccess");
+            _.bindAll(this, "fetchReservationSuccess");
+        },
+        render: function () {
+            this.$el.html(this.template(this.model.toJSON()));
+            return this;
+        },
+        closeReservationView: function () {
+            Backbone.history.navigate("", { trigger: true });
+        },
+        fetchRestaurant: function () {
+            this.restaurant.set({id: this.model.get("restaurantId")}, {silent: true});
+            this.restaurant.fetch({
+                success: this.fetchRestaurantSuccess,
+                error: function (model, xhr, options) {
+                    console.log("Snap goes the request.");
+                }
+            });
+        },
+        fetchRestaurantSuccess: function (model, response, options) {
+            this.model.set({restaurantName: model.get('name')});
+        },
+        fetchReservationSuccess: function (model, response, options) {
+            this.restaurant.set({id: model.get("restaurantId")});
+        },
+        fetchReservation: function (reservationId) {
+            this.model.set({id: reservationId}, {silent: true});
+            this.model.fetch({
+                    success: this.fetchReservationSuccess,
+                    error: function (model, xhr, options) {
+                        console.log("Snap goes the request.");
+                    }
+                }
+            );
+        }
+    });
 })();
