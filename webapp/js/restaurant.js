@@ -34,8 +34,7 @@
             name: "undefined",
             location: "",
             reservations: [],
-            availableTimes: [],
-            selected: false
+            availableTimes: []
         },
         urlRoot: "/restaurants"
     });
