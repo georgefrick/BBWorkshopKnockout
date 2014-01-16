@@ -34,6 +34,11 @@ footer, header, hgroup, menu, nav, section {
     display: block;
 }
 
+.jump {
+    background-color: #F98D29;
+    color: black;
+    padding: .5em;
+}
 body {
     line-height: 1;
 }
@@ -74,7 +79,7 @@ table {
 body {
     font-family: "Arial Black", Gadget, sans-serif;
     min-height: 740px;
-    background: #808284;     /* Switch to NVISIA gray */
+    background:  #F98D29;     /* Switch to NVISIA gray */
 }
 
 b, strong { font-weight: bold }
@@ -191,6 +196,14 @@ i, em { font-style: italic }
 */
 #overview { display: none }
 
+.birds-eye {
+    display:none;
+}
+
+.impress-on-compare-1 .step {
+    opacity: 1;
+    cursor: pointer;
+}
 /*
    Make other steps visible and give them a pointer cursor using the
     `impress-on-` class.
