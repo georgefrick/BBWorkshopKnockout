@@ -149,7 +149,6 @@
                 success: this.fetchRestaurantSuccess,
                 error: function (model, xhr, options) {
                     console.log("Snap goes the request.");
-                    // TODO What do we do here?
                 }
             });
         },
@@ -165,7 +164,6 @@
                     success: this.fetchReservationSuccess,
                     error: function (model, xhr, options) {
                         console.log("Snap goes the request.");
-                        // TODO What do we do here?
                     }
                 }
             );
