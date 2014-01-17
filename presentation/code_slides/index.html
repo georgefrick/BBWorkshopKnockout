@@ -1044,74 +1044,8 @@ Bartolotta's Lake Park Bistro: zEFtfkz3z3nx7qlh
 </div>
 <!-- ************************************************************* -->
 
-
-
 <!-- ************************************************************* -->
-<div id="code-24" class="step" data-x="3000" data-y="8000" >
-        <span style="font-size:  .8rem;">
-        <pre class="brush: js; highlight:[12]">
-     //  Modify Reservation Form View to add events. (reservation.js)
-     Reservation.FormView = Backbone.View.extend({
-        events: {
-            'change input[type="text"]': 'changeGenericValue',
-            'change input[type="number"]': 'changeGenericValue',
-            'change select': 'changeGenericValue',
-            "keypress input[type='text']": 'actOnEnter',
-            "keypress input[type='number']": 'actOnEnter',
-            'click .submitButton': 'submitReservationRequest',
-            'click .cancelButton': 'cancelReservationRequest'
-        },
-        initialize: function (options) { /* Code Cut For Brevity */  },
-        render: function () {
-            this.$el.html(this.template(this.model.toJSON()));
-            return this;
-        },
-        changeGenericValue: function (event) {
-            var sValue = $(event.currentTarget).val();
-            var sName = $(event.currentTarget).attr("name");
-
-            // This creates a data binding to the model based on the attributes name/value pair.
-            var temp = {};
-            temp[sName] = sValue;
-
-            this.model.set(temp, {silent: true});
-        },
-        actOnEnter: function (event) {
-            if (event.keyCode != 13) {
-                return;
-            }
-
-            event.preventDefault();
-            this.changeGenericValue(event);
-        },
-        submitReservationRequest: function () {
-            this.model.save(this.model,
-                {wait: true,
-                    success: function (model, response, options) {
-                        Backbone.history.navigate("/reservation/"+model.id,{trigger:true});
-                    },
-                    error: function (model, xhr, options) {
-                        console.log("Snap goes the request.");
-                    }
-                }
-            );
-            return false;
-        },
-        cancelReservationRequest: function () {
-            this.remove();
-            return false;
-        }
-    });
-    // end
-
-        </pre>
-        </span>
-</div>
-<!-- ************************************************************* -->
-
-
-<!-- ************************************************************* -->
-<div id="code-25" class="step" data-x="4000" data-y="8000" >
+<div id="code-25" class="step" data-x="3000" data-y="8000" >
         <span style="font-size:  .8rem;">
         <pre class="brush: js; ">
      // Create a Reservation View (reservation.js)
@@ -1171,7 +1105,7 @@ Bartolotta's Lake Park Bistro: zEFtfkz3z3nx7qlh
 
 
 <!-- ************************************************************* -->
-<div id="code-26" class="step" data-x="5000" data-y="8000" >
+<div id="code-26" class="step" data-x="4000" data-y="8000" >
         <span style="font-size:  .8rem;">
         <pre class="brush: js; highlight:[6,15,21,26,33,34,35,36,37,38,39,40]">
      // Add a Reservation route to view completed reservations. (application.js)
@@ -1498,11 +1432,6 @@ Bartolotta's Lake Park Bistro: zEFtfkz3z3nx7qlh
     <!-- An overview step that shows all slides -->
     <div id="overview" class="step" data-x="3000" data-y="4500" data-scale="16">
     </div>
-
-
-<div style="position: absolute; top: -400px; left:-1000px; font-size: 50rem; color: white; text-shadow: 2px 2px 2px #000000;">
-    1.
-</div>
 
 </div>
 
