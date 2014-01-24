@@ -34,6 +34,7 @@
     <script type="text/javascript" src="libs/json2.js"></script>
     <script type="text/javascript" src="libs/underscore.js"></script>
     <script type="text/javascript" src="libs/knockout-3.0.0.js"></script>
+    <script type="text/javascript" src="libs/knockout.validation.js"></script>
     <script type="text/javascript" src="libs/sammy.js"></script>
     <script type="text/javascript" src="libs/handlebars-v1.3.0.js"></script>
     <script type="text/javascript" src="js/handlebars-helpers.js"></script>
@@ -41,10 +42,35 @@
     <script type="text/javascript" src="js/application.js"></script>
     <script type="text/javascript" src="js/restaurant.js"></script>
 
-
 </head>
 
 <body class="restaurant">
+
+<script type="text/html" id="restaurant-template">
+    <div class="row">
+        <div class="large-12 columns">
+            <div class="callout panel">
+                <p><strong data-bind="text: name"></strong><br/><span data-bind="text: tagline"></span></p>
+                <div class="row">
+                    <div class="large-3 medium-6 small-12 columns">
+                        <p>Price: <span data-bind="text: fPrice()"></span></p>
+                    </div>
+                    <div class="large-3 medium-6 small-12 columns">
+                        <p>Rating: <span data-bind="text: FormatUtils.formatRating(rating)"></span></p>
+                    </div>
+                    <div class="large-6 medium-12 small-12 columns">
+                        <p>Address: <span data-bind="text: address"></span></p>
+                    </div>
+                </div>
+                <p>Description: <span data-bind="text: description"></span></p>
+                <div class="availableTimes">
+                    <a href="#" data-bind="click: $root.goToRestaurant" class="button restaurantRow" style="color: white;">Show Times</a>
+                </div>
+                <div class="reservationForm" />
+            </div>
+        </div>
+    </div>
+</script>
 
     <div class="row">
         <div class="large-12 columns">
@@ -95,37 +121,14 @@
         </div>
 
         <div  data-bind="visible: !chosenRestaurant()">
-        <div class='restaurantList' data-bind="foreach: restaurants ">
-            <div class="row">
-                <div class="large-12 columns">
-                    <div class="callout panel">
-                        <p><strong data-bind="text: name"></strong><br/><span data-bind="text: tagline"></span></p>
-                        <div class="row">
-                            <div class="large-3 medium-6 small-12 columns">
-                                <p>Price: <span data-bind="text: fPrice()"></span></p>
-                            </div>
-                            <div class="large-3 medium-6 small-12 columns">
-                                <p>Rating: <span data-bind="text: FormatUtils.formatRating(rating)"></span></p>
-                            </div>
-                            <div class="large-6 medium-12 small-12 columns">
-                                <p>Address: <span data-bind="text: address"></span></p>
-                            </div>
-                        </div>
-                        <p>Description: <span data-bind="text: description"></span></p>
-                        <div class="availableTimes">
-                            <a href="#" data-bind="click: $root.goToRestaurant" class="button restaurantRow" style="color: white;">Show Times</a>
-                        </div>
-                        <div class="reservationForm" />
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
-           </div>
+        <div class='restaurantList' data-bind="template: { name: 'restaurant-template', foreach: restaurants }">
 
-    <div class="row"  data-bind="visible: chosenRestaurant()">
-        <div class="large-12 columns">
-            <div class="callout panel">
+        </div>
+        </div>
+
+        <div class="row"  data-bind="visible: chosenRestaurant()">
+            <div class="large-12 columns">
+                <div class="callout panel">
                 <span data-bind=" with: chosenRestaurant()">
                 <p><strong data-bind="text: name"></strong><br/><span data-bind="text: tagline"></span></p>
                 <div class="row">
@@ -141,91 +144,106 @@
                 </div>
                 <p>Description: <span data-bind="text: description"></span></p>
                  </span>
-                <div class="row">
-                    <form>
-                        <fieldset>
-                            <legend>Available Times</legend>
+                    <div class="row">
+                        <form>
+                            <fieldset>
+                                <legend>Available Times</legend>
 
-                            <div class="row" data-bind=" foreach: availableTimes()">
+                                <div class="row" data-bind=" foreach: availableTimes()">
 
-                                <div class="large-3 medium-4 small-6 columns availableTime">
-                                    <span data-bind="text: FormatUtils.formatTime($data), click: $root.goToForm"></span>
-                                </div>
+                                    <div class="large-3 medium-4 small-6 columns availableTime">
+                                        <span data-bind="text: FormatUtils.formatTime($data), click: $root.goToForm"></span>
+                                    </div>
 
-                            </div>
-                        </fieldset>
-                    </form>
-                </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
 
-                <div class="row" data-bind="visible: chosenTime()">
-                    <div class="large-12 columns">
-                        <div class="panel">
-                            <h5>The reservation form:</h5>
-                            <form data-bind="submit: $root.submitForm, with: reservationForm()">
-                                <div class="row">
-                                    <div class="large-6 columns">
-                                        <h5><label>Selected Time:</label><span data-bind="text: FormatUtils.formatTime($root.chosenTime())"></span></h5>
-                                    </div>
-                                    <div class="large-6 columns">
-                                        <label>Number of Guests</label>
-                                        <input type="number" name="guests" placeholder="#" data-bind="value: guests"/>
-                                    </div>
-                                </div>
+                    <div class="row" data-bind="visible: chosenTime()">
+                        <div class="large-12 columns">
+                            <div class="panel">
+                                <h5>The reservation form:</h5>
+                                <script id="customMessageTemplate" type="text/html">
+                                    <em class="customMessage" data-bind='validationMessage: field'></em>
+                                </script>
+                                <form data-bind="submit: $root.submitForm, with: reservationForm()">
+                                    <fieldset>
+                                        <div class="row">
+                                            <div class="large-6 columns">
+                                                <h5><label>Selected Time:</label><span data-bind="text: FormatUtils.formatTime($root.chosenTime())"></span></h5>
+                                            </div>
+                                            <div class="large-6 columns">
+                                                <label>Number of Guests</label>
+                                                <input type="number" name="guests" placeholder="#" data-bind="value: guests"/>
+                                            </div>
+                                        </div>
 
-                                <div class="row">
-                                    <div class="large-12 columns">
-                                        <label>Name:</label>
-                                        <input type="text" name="name" placeholder="Enter your full name" data-bind="value: name"/>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="large-6 medium-6 columns">
-                                        <label>Phone:</label>
-                                        <input type="text" name="phone" placeholder="###-###-####" data-bind="value: phone"/>
-                                    </div>
-                                    <div class="large-6 medium-6 columns">
-                                        <label>Email:</label>
-                                        <input type="text" name="email" placeholder="user@domain.ext" data-bind="value: email" />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="large-8 medium-8 columns">
-                                        <label>Seating:</label>
-                                        <input type="radio" name="location" value="Red" id="noPreference"><label for="noPreference">No Preference</label>
-                                        <input type="radio" name="location" value="Red" id="outside"><label for="outside">Outside</label>
-                                        <input type="radio" name="location" value="Blue" id="inside"><label for="inside">Inside</label>
-                                    </div>
-                                    <div class="large-4 medium-4 columns">
-                                        <label>Other Info:</label>
-                                        <input id="specialOccasion" name="isSpecialOccasion" type="checkbox" data-bind="value: isSpecialOccasion"><label for="specialOccasion">Special Occasion</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="large-12 columns">
-                                        <label>Special Requests:</label>
-                                        <textarea name="specialRequests" placeholder="Enter any special requests here." data-bind="value: specialRequests"></textarea>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="small-12 medium-12 large-12 small-centered columns">
-                                        <button type="submit" class="small radius button submitButton">Make Reservation</button>
-                                        <button data-bind="click: $root.cancelForm" class="small radius secondary button cancelButton">Cancel</button>
-                                    </div>
-                                </div>
-                            </form>
-                            <div class="error-box">
-                                <ul class="error-list"></ul>
+                                        <div class="row">
+                                            <div class="large-12 columns">
+                                                <label>Name:</label>
+                                                <input type="text" name="name" placeholder="Enter your full name" data-bind="value: name"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="large-6 medium-6 columns">
+                                                <label>Phone:</label>
+                                                <input type="text" name="phone" placeholder="###-###-####" data-bind="value: phone"/>
+                                            </div>
+                                            <div class="large-6 medium-6 columns">
+                                                <label>Email:</label>
+                                                <input type="text" name="email" placeholder="user@domain.ext" data-bind="value: email" />
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="large-8 medium-8 columns">
+                                                <label>Seating:</label>
+                                                <input type="radio" name="location" value="Red" id="noPreference"><label for="noPreference">No Preference</label>
+                                                <input type="radio" name="location" value="Red" id="outside"><label for="outside">Outside</label>
+                                                <input type="radio" name="location" value="Blue" id="inside"><label for="inside">Inside</label>
+                                            </div>
+                                            <div class="large-4 medium-4 columns">
+                                                <label>Other Info:</label>
+                                                <input id="specialOccasion" name="isSpecialOccasion" type="checkbox" data-bind="value: isSpecialOccasion"><label for="specialOccasion">Special Occasion</label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="large-12 columns">
+                                                <label>Special Requests:</label>
+                                                <textarea name="specialRequests" placeholder="Enter any special requests here." data-bind="value: specialRequests"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="large-12 columns">
+                                                <div class="error-box">
+                                                    <ul class="error-list">
+                                                        <li data-bind="validationMessage: guests"></li>
+                                                        <li data-bind="validationMessage: name"></li>
+                                                        <li data-bind="validationMessage: phone"></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="small-12 medium-12 large-12 small-centered columns">
+                                                <button type="button" data-bind="click: $root.submitForm" class="small radius button submitButton">Make Reservation</button>
+                                                <button data-bind="click: $root.cancelForm" class="small radius secondary button cancelButton">Cancel</button>
+                                            </div>
+                                        </div>
+
+                                    </fieldset>
+                                </form>
+
                             </div>
                         </div>
                     </div>
+
+
                 </div>
-
-
             </div>
         </div>
     </div>
 
-    </div>
     <div class="large-4 medium-4 columns">
         <div class="panel">
             <h5>Other/Login?:</h5>

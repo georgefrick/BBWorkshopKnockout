@@ -28,7 +28,10 @@
     var RestaurantModule = {};
     window.RestaurantModule = RestaurantModule;
 
-    // A basic POJSO to represent a Restaurant.
+    /*
+     * A basic POJSO to represent a Restaurant.
+     * The two functions are examples of one way to do formatters in Knockout.
+     */
     RestaurantModule.Restaurant = function(data) {
         var self = this;
         this.name = data.name;
@@ -49,12 +52,23 @@
         };
     };
 
-    // A Knockout observable structure to represent the form and have
-    // two way data binding.
+    /*
+     * A Knockout observable structure to represent the form and have
+     * two way data binding.
+     * Additionally, validation is now also specified.
+     */
     var reservationForm = {
-        guests : ko.observable(2),
-        name : ko.observable(),
-        phone : ko.observable(),
+        guests : ko.observable(2).extend({  required: true }),
+        name : ko.observable().extend({ required: true, minLength: 2 }),
+        phone : ko.observable().extend({  required: true,
+            validator: function (value) {
+                if (value !== undefined) {
+                    var check = value.replace(/[\s\(\)]/g, '');
+                    if (check.match(/^1?-?(\d{3})?-?\d{3}-?\d{4}$/) === null) {
+                        return false;
+                    }
+                }
+            }}),
         email : ko.observable(),
         location : ko.observable(),
         isSpecialOccasion : ko.observable(),
@@ -72,75 +86,75 @@
         self.chosenTime = ko.observable();
         self.availableTimes = ko.observableArray([]);
         self.reservations = ko.observableArray([]);
-        self.reservationForm = ko.observable(reservationForm);
+        reservationForm.errors = ko.validation.group(reservationForm);
+        self.reservationForm = ko.validatedObservable(reservationForm);
         self.confirmedReservation = ko.observable();
         self.ajaxWaiting = ko.observable(false);
 
+        // A 'route' to choose a restaurant.
         self.goToRestaurant = function(restaurant) {
            location.hash = "restaurant/" + restaurant.id;
         };
 
+        // An 'event' to select a time and show the form. Selecting the
+        // time causes it to be non-null which the form visibility is bound to.
         self.goToForm = function(time) {
-            // do something.
             self.chosenTime(time);
         };
 
+        // The form submission event.
         self.submitForm = function(something) {
-            var data = ko.toJS(self.reservationForm); // toJSON returns a string.
-            data.time = self.chosenTime();
-            data.restaurantId = self.chosenRestaurant().id;
 
-            self.ajaxWaiting(true);
-            $.post("/reservations", data, function(response) {
-                console.log(response);
-                self.restaurants(null);
-                self.chosenRestaurant(null);
-                self.chosenTime(null);
-                self.availableTimes(null);
-                self.ajaxWaiting(false);
-                location.hash = "reservation/" + response.id;
-            });
+            if( self.reservationForm.isValid() ) {
+                var data = ko.toJS(self.reservationForm); // toJSON returns a string.
+                data.time = self.chosenTime();
+                data.restaurantId = self.chosenRestaurant().id;
+                self.ajaxWaiting(true);
+                $.post("/reservations", data, function(response) {
+                    console.log(response);
+                    self.restaurants(null);
+                    self.chosenRestaurant(null);
+                    self.chosenTime(null);
+                    self.availableTimes(null);
+                    self.ajaxWaiting(false);
+                    location.hash = "reservation/" + response.id;
+                });
+            } else {
+                self.reservationForm.errors.showAllMessages();
+            }
 
             return false; // KO will html submit if you return true.
         };
 
+        // @TODO This is not implemented.
         self.cancelForm = function(something) {
             console.log("I got passed this: " + something);
         };
 
+        /*
+         * This is where the application 'starts up', by retrieving the restaurant list.
+         */
         $.getJSON("/restaurants", function(allData) {
-            var mappedRestaurants = $.map(allData, function(item) { return new RestaurantModule.Restaurant(item) });
+            var mappedRestaurants = $.map(allData, function(item) {
+                return new RestaurantModule.Restaurant(item)
+            });
             self.restaurants(mappedRestaurants);
         });
 
+        /*
+         * Start up the Sammy router.
+         */
         $.sammy('body',function() {
-            this.get('#reservation/:reservationId', function() {
-                console.log("Sammy C");
-
-                $.getJSON("/reservations/" + this.params.reservationId, function(allData) {
-                    var basicData = allData;
-
-
-                    $.getJSON('/restaurants/' + basicData.restaurantId, function(data) {
-
-                        basicData.restaurantName = data.name;
-                        self.confirmedReservation(basicData);
-                        console.log("restaurantName set to " + data.name);
-                    });
-                });
-
-            });
-
+            // When you go to root, reset the vars.
             this.get('/', function() {
                 self.chosenRestaurant(null);
                 self.chosenTime(null);
                 self.availableTimes(null);
                 self.reservations(null);
-                console.log("Sammy A");
             });
 
+            // Load a restaurant.
             this.get('#restaurant/:restaurantId', function() {
-                console.log("Sammy B");
 
                 $.getJSON("/restaurants/" + this.params.restaurantId, function(allData) {
                     self.chosenRestaurant(new RestaurantModule.Restaurant(allData));
@@ -151,6 +165,19 @@
                     self.reservations(data.reservations);
                 });
                 self.chosenTime(null);
+
+            });
+
+            // Load a reservation.
+            this.get('#reservation/:reservationId', function() {
+
+                $.getJSON("/reservations/" + this.params.reservationId, function(allData) {
+                    var basicData = allData;
+                    $.getJSON('/restaurants/' + basicData.restaurantId, function(data) {
+                        basicData.restaurantName = data.name;
+                        self.confirmedReservation(basicData);
+                    });
+                });
 
             });
 

@@ -15,8 +15,12 @@ body.restaurant {
     font-family: Georgia, Times, "Times New Roman", serif;
 }
 
-.error-box {
+.error-box, .validationMessage {
     color: red;
+}
+
+.customMessage {
+    color: orange;
 }
 
 .error-box ul {
@@ -24,7 +28,8 @@ body.restaurant {
 }
 
 input[type="text"].invalid,
-input[type="number"].invalid {
+input[type="number"].invalid,
+input.validationMessage{
     border: 2px solid red;
     background: yellow;
     font-size: 1.1em;

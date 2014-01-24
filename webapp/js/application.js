@@ -31,6 +31,21 @@
 
     $(document).ready(function(){
 
+        // Before starting up Knockout, configure the validator plugin.
+        ko.validation.rules.pattern.message = 'Invalid.';
+
+        ko.validation.configure({
+            registerExtenders: true,
+            messagesOnModified: true,
+            insertMessages: false,
+            parseInputAttributes: true,
+            messageTemplate: null,
+            decorateInputElement: true,
+            decorateElement: true,
+            errorElementClass: 'invalid'
+        });
+
+        // Start up knocking by binding the main object.
         ko.applyBindings(new RestaurantModule.RestaurantView());
 
     });
