@@ -38,7 +38,6 @@
     <script type="text/javascript" src="libs/sammy.js"></script>
     <script type="text/javascript" src="libs/handlebars-v1.3.0.js"></script>
     <script type="text/javascript" src="js/handlebars-helpers.js"></script>
-    <script type="text/javascript" src="js/precompiled-templates.js"></script>
     <script type="text/javascript" src="js/application.js"></script>
     <script type="text/javascript" src="js/restaurant.js"></script>
 
@@ -72,6 +71,30 @@
     </div>
 </script>
 
+<script type="text/html" id="reservation-template">
+    <div class="large-12 columns">
+        <div class="callout panel">
+            <div class="row">
+                <h4>Reservation successfully created for:</h4>
+                <p><strong data-bind="text: restaurantName"></strong></p>
+                <div class="large-6 medium-12 small-12 columns" style="margin-bottom:15px;">
+                    <label>Name: </label><span data-bind="text: name"></span>
+                </div>
+                <div class="large-6 medium-12 small-12 columns" style="margin-bottom:15px;">
+                    <label>Phone Number: </label><span data-bind="text: phone"></span>
+                </div>
+                <div class="large-6 medium-12 small-12 columns" style="margin-bottom:15px;">
+                    <label># of Guests: </label><span data-bind="text: guests"></span>
+                </div>
+                <div class="large-6 medium-12 small-12 columns" style="margin-bottom:15px;">
+                    <label>Time: </label><span data-bind="text: FormatUtils.formatTime(time)"></span>
+                </div>
+            </div>
+            <button class="reset">Return to Restaurant List</button>
+        </div>
+    </div>
+</script>
+
     <div class="row">
         <div class="large-12 columns">
             <div style="display: inline-block;">
@@ -96,35 +119,9 @@
             </div>
         </div>
 
-        <div class="row" data-bind="visible: confirmedReservation(), with: confirmedReservation()">
-            <div class="large-12 columns">
-                <div class="callout panel">
-                    <div class="row">
-                        <h4>Reservation successfully created for:</h4>
-                        <p><strong data-bind="text: restaurantName"></strong></p>
-                        <div class="large-6 medium-12 small-12 columns" style="margin-bottom:15px;">
-                            <label>Name: </label><span data-bind="text: name"></span>
-                        </div>
-                        <div class="large-6 medium-12 small-12 columns" style="margin-bottom:15px;">
-                            <label>Phone Number: </label><span data-bind="text: phone"></span>
-                        </div>
-                        <div class="large-6 medium-12 small-12 columns" style="margin-bottom:15px;">
-                            <label># of Guests: </label><span data-bind="text: guests"></span>
-                        </div>
-                        <div class="large-6 medium-12 small-12 columns" style="margin-bottom:15px;">
-                            <label>Time: </label><span data-bind="text: FormatUtils.formatTime(time)"></span>
-                        </div>
-                    </div>
-                    <button class="reset">Return to Restaurant List</button>
-                </div>
-            </div>
-        </div>
+        <div class="row" data-bind="template: { name: 'reservation-template', if: confirmedReservation(), data: confirmedReservation() }"></div>
 
-        <div  data-bind="visible: !chosenRestaurant()">
-        <div class='restaurantList' data-bind="template: { name: 'restaurant-template', foreach: restaurants }">
-
-        </div>
-        </div>
+        <div class='restaurantList' data-bind="template: { name: 'restaurant-template', if: !chosenRestaurant(), foreach: restaurants }"></div>
 
         <div class="row"  data-bind="visible: chosenRestaurant()">
             <div class="large-12 columns">

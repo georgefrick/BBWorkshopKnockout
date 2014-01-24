@@ -1,23 +1,23 @@
 <div class="row">
-    <div class="large-12 columns">
-        <div class="callout panel">
-            <p><strong>{{name}}</strong>{{#if tagline}}<br/>{{/if}}{{tagline}}</p>
-            <div class="row">
-                <div class="large-3 medium-6 small-12 columns">
-                    <p>Price: {{showPrice price}}</p>
+        <div class="large-12 columns">
+            <div class="callout panel">
+                <p><strong data-bind="text: name"></strong><br/><span data-bind="text: tagline"></span></p>
+                <div class="row">
+                    <div class="large-3 medium-6 small-12 columns">
+                        <p>Price: <span data-bind="text: fPrice()"></span></p>
+                    </div>
+                    <div class="large-3 medium-6 small-12 columns">
+                        <p>Rating: <span data-bind="text: FormatUtils.formatRating(rating)"></span></p>
+                    </div>
+                    <div class="large-6 medium-12 small-12 columns">
+                        <p>Address: <span data-bind="text: address"></span></p>
+                    </div>
                 </div>
-                <div class="large-3 medium-6 small-12 columns">
-                    <p>Rating: {{showRating rating}}</p>
+                <p>Description: <span data-bind="text: description"></span></p>
+                <div class="availableTimes">
+                    <a href="#" data-bind="click: $root.goToRestaurant" class="button restaurantRow" style="color: white;">Show Times</a>
                 </div>
-                <div class="large-6 medium-12 small-12 columns">
-                    <p>Address: {{address}}</p>
-                </div>
+                <div class="reservationForm" />
             </div>
-            <p>Description: {{description}} </p>
-            <div class="availableTimes">
-                <a href="#restaurant/{{id}}" name="restaurant-{{id}}" class="button restaurantRow" style="color: white;">Show Times</a>
-            </div>
-            <div class="reservationForm" />
         </div>
     </div>
-</div>
