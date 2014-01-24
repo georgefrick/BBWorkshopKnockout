@@ -22,140 +22,140 @@
  * THE SOFTWARE.
  */
 
-/**
- * Created by bpeterson on 1/9/14.
- */
-
 (function () {
     "use strict";
 
     var RestaurantModule = {};
     window.RestaurantModule = RestaurantModule;
 
-    /**
-     * Model to define a Restaurant
-     * @type {*|void}
+    // A basic POJSO to represent a Restaurant.
+    RestaurantModule.Restaurant = function(data) {
+        var self = this;
+        this.name = data.name;
+        this.location = data.location;
+        this.reservations = [];
+        this.availableTimes = [];
+        this.price = data.price;
+        this.tagline = data.tagline || "";
+        this.address = data.address;
+        this.description = data.description;
+        this.rating = data.rating;
+        this.id = data.id;
+        this.fPrice = function() {
+            return FormatUtils.formatPrice(self.price);
+        };
+        this.fRating = function() {
+            return FormatUtils.formatRating(self.rating);
+        };
+    };
+
+    // A Knockout observable structure to represent the form and have
+    // two way data binding.
+    var reservationForm = {
+        guests : ko.observable(2),
+        name : ko.observable(),
+        phone : ko.observable(),
+        email : ko.observable(),
+        location : ko.observable(),
+        isSpecialOccasion : ko.observable(),
+        specialRequests : ko.observable()
+    };
+
+    /*
+     * The main application object, holds the top level references and the Sammy
+     * router.
      */
-    RestaurantModule.Restaurant = Backbone.Model.extend({
-        defaults: {
-            name: "undefined",
-            location: "",
-            reservations: [],
-            availableTimes: [],
-            selected: false
-        },
-        urlRoot: "/restaurants",
-        fetchReservations: function () {
-            $.ajax('/restaurants/' + this.get('id') + '/reservations', {
-                context: this,
-                success: function (response) {
-                    this.set({
-                        'reservations': response.reservations,
-                        'availableTimes': response.available
+    RestaurantModule.RestaurantView = function() {
+        var self = this;
+        self.restaurants = ko.observableArray([]);
+        self.chosenRestaurant = ko.observable();
+        self.chosenTime = ko.observable();
+        self.availableTimes = ko.observableArray([]);
+        self.reservations = ko.observableArray([]);
+        self.reservationForm = ko.observable(reservationForm);
+        self.confirmedReservation = ko.observable();
+        self.ajaxWaiting = ko.observable(false);
+
+        self.goToRestaurant = function(restaurant) {
+           location.hash = "restaurant/" + restaurant.id;
+        };
+
+        self.goToForm = function(time) {
+            // do something.
+            self.chosenTime(time);
+        };
+
+        self.submitForm = function(something) {
+            var data = ko.toJS(self.reservationForm); // toJSON returns a string.
+            data.time = self.chosenTime();
+            data.restaurantId = self.chosenRestaurant().id;
+
+            self.ajaxWaiting(true);
+            $.post("/reservations", data, function(response) {
+                console.log(response);
+                self.restaurants(null);
+                self.chosenRestaurant(null);
+                self.chosenTime(null);
+                self.availableTimes(null);
+                self.ajaxWaiting(false);
+                location.hash = "reservation/" + response.id;
+            });
+
+            return false; // KO will html submit if you return true.
+        };
+
+        self.cancelForm = function(something) {
+            console.log("I got passed this: " + something);
+        };
+
+        $.getJSON("/restaurants", function(allData) {
+            var mappedRestaurants = $.map(allData, function(item) { return new RestaurantModule.Restaurant(item) });
+            self.restaurants(mappedRestaurants);
+        });
+
+        $.sammy('body',function() {
+            this.get('#reservation/:reservationId', function() {
+                console.log("Sammy C");
+
+                $.getJSON("/reservations/" + this.params.reservationId, function(allData) {
+                    var basicData = allData;
+
+
+                    $.getJSON('/restaurants/' + basicData.restaurantId, function(data) {
+
+                        basicData.restaurantName = data.name;
+                        self.confirmedReservation(basicData);
+                        console.log("restaurantName set to " + data.name);
                     });
-                    this.trigger('fetchComplete');
-                },
-                failure: function () {
-                    console.log(['Something strange is afoot', arguments]);
-                }
+                });
+
             });
-        }
-    });
 
-    /**
-     * View to Render a single Restaurant.
-     * @type {*|void}
-     */
-    RestaurantModule.RestaurantView = Backbone.View.extend({
-        defaults: {
-            formView: undefined,
-            selected:false
-        },
-        events: {
-            'click .availableTime': 'selectTime'
-        },
-        initialize: function () {
-            this.template = Handlebars.templates.restaurant;
-            this.listenTo(this.model, 'fetchComplete', this.render);
-        },
-        render: function () {
-            if (this.formView) {
-                this.$el.find('.reservationForm').detach();
-                this.formView=undefined;
-            }
-
-            this.$el.html(this.template(this.model.toJSON()));
-            if (this.selected){
-                this.$el.find(".availableTimes").html(this.availableTimes.render().el);
-            }
-            return this;
-        },
-        showTimes: function(){
-            this.selected=true;
-            this.availableTimes = new RestaurantModule.TimeSlotView({model:this.model});
-            this.model.fetchReservations();
-        },
-        selectTime: function (event) {
-            var reservationTime = parseInt(event.currentTarget.getAttribute('value'));
-            var view = new Reservation.FormView({restaurantId: this.model.get('id'), reservationTime: reservationTime});
-            this.formView = view;
-            this.$('.reservationForm').empty().append(view.render().el);
-        }
-    });
-
-    /**
-     * Main View to Manage the Restaurant List for Reservations.
-     * This view contains subviews in order to allow tighter control.
-     * @type {*|void}
-     */
-    RestaurantModule.RestaurantListView = Backbone.View.extend({
-        initialize: function () {
-            this.template = Handlebars.templates.restaurantListView;
-            this.restaurants = new RestaurantModule.RestaurantList();
-            this.listenTo(this.restaurants, "add", this.addRestaurantView);
-
-            _.bindAll(this, "fireReadyEvent");
-            this.restaurants.fetch({
-                success: this.fireReadyEvent
+            this.get('/', function() {
+                self.chosenRestaurant(null);
+                self.chosenTime(null);
+                self.availableTimes(null);
+                self.reservations(null);
+                console.log("Sammy A");
             });
-        },
-        render: function () {
-            this.$el.html(this.template(this));
-            return this;
-        },
-        addRestaurantView: function (restaurant) {
-            var view = new RestaurantModule.RestaurantView({model: restaurant});
-            this.$('.restaurantList').append(view.render().el);
-        },
-        count: function () {
-            return this.restaurants.length;
-        },
-        fireReadyEvent: function () {
-            this.trigger('ready');
-        },
-        getRestaurantById:function(id){
-            return this.restaurants.get(id);
-        }
-    });
 
-    /**
-     * Collection of Restaurant models.
-     * @type {*|void}
-     */
-    RestaurantModule.RestaurantList = Backbone.Collection.extend({
-        model: RestaurantModule.Restaurant,
-        url: "/restaurants"
-    });
+            this.get('#restaurant/:restaurantId', function() {
+                console.log("Sammy B");
 
-    RestaurantModule.TimeSlotView = Backbone.View.extend({
-        initialize:function(options){
-            this.template = Handlebars.templates.availableTimes;
-        },
-        render:function(){
-            this.$el.html(this.template(this.model.toJSON()));
-            return this;
-        }
-    });
+                $.getJSON("/restaurants/" + this.params.restaurantId, function(allData) {
+                    self.chosenRestaurant(new RestaurantModule.Restaurant(allData));
+                    console.log(allData.id);
+                });
+                $.getJSON('/restaurants/' + this.params.restaurantId + '/reservations', function(data) {
+                    self.availableTimes(data.available);
+                    self.reservations(data.reservations);
+                });
+                self.chosenTime(null);
+
+            });
+
+        }).run();
+    };
 
     return RestaurantModule;
 })();

@@ -30,6 +30,10 @@
     var Reservation = {};
     window.Reservation = Reservation;
 
+    Reservation.Model = function(data) {
+
+    };
+
     Reservation.Model = Backbone.Model.extend({
         urlRoot: "/reservations",
         validation: {
