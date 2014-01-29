@@ -53,29 +53,6 @@
     };
 
     /*
-     * A Knockout observable structure to represent the form and have
-     * two way data binding.
-     * Additionally, validation is now also specified.
-     */
-    var reservationForm = {
-        guests : ko.observable(2).extend({  required: true }),
-        name : ko.observable().extend({ required: true, minLength: 2 }),
-        phone : ko.observable().extend({  required: true,
-            validator: function (value) {
-                if (value !== undefined) {
-                    var check = value.replace(/[\s\(\)]/g, '');
-                    if (check.match(/^1?-?(\d{3})?-?\d{3}-?\d{4}$/) === null) {
-                        return false;
-                    }
-                }
-            }}),
-        email : ko.observable(),
-        location : ko.observable(),
-        isSpecialOccasion : ko.observable(),
-        specialRequests : ko.observable()
-    };
-
-    /*
      * The main application object, holds the top level references and the Sammy
      * router.
      */
@@ -86,8 +63,8 @@
         self.chosenTime = ko.observable();
         self.availableTimes = ko.observableArray([]);
         self.reservations = ko.observableArray([]);
-        reservationForm.errors = ko.validation.group(reservationForm);
-        self.reservationForm = ko.validatedObservable(reservationForm);
+        Reservation.reservationForm.errors = ko.validation.group(Reservation.reservationForm);
+        self.reservationForm = ko.validatedObservable(Reservation.reservationForm);
         self.confirmedReservation = ko.observable();
         self.ajaxWaiting = ko.observable(false);
 

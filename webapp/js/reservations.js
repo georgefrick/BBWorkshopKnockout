@@ -21,14 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-/**
- * jgitter 1-10-2014
- */
+
 (function () {
     "use strict";
 
     var Reservation = {};
     window.Reservation = Reservation;
 
+    /*
+     * A Knockout observable structure to represent the form and have
+     * two way data binding.
+     * Additionally, validation is now also specified.
+     */
+    Reservation.reservationForm = {
+        guests : ko.observable(2).extend({  required: true }),
+        name : ko.observable().extend({ required: true, minLength: 2 }),
+        phone : ko.observable().extend({  required: true,
+            validator: function (value) {
+                if (value !== undefined) {
+                    var check = value.replace(/[\s\(\)]/g, '');
+                    if (check.match(/^1?-?(\d{3})?-?\d{3}-?\d{4}$/) === null) {
+                        return false;
+                    }
+                }
+            }}),
+        email : ko.observable(),
+        location : ko.observable(),
+        isSpecialOccasion : ko.observable(),
+        specialRequests : ko.observable()
+    };
 
 })();
