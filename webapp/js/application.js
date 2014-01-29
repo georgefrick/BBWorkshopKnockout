@@ -22,14 +22,15 @@
  * THE SOFTWARE.
  */
 
-/**
- * Created by bpeterson on 1/9/14.
- */
-
 (function(){
     "use strict";
 
     $(document).ready(function(){
+
+        /*
+         * Build a router, we can now do this first.
+         */
+        var router = Router.router;
 
         // Before starting up Knockout, configure the validator plugin.
         ko.validation.rules.pattern.message = 'Invalid.';
@@ -45,9 +46,63 @@
             errorElementClass: 'invalid'
         });
 
-        // Start up knocking by binding the main object.
-        ko.applyBindings(new RestaurantModule.RestaurantView());
+        /*
+         * http://digitalbush.com/2013/12/11/knockout-js-href-binding/
+         * Example of creating a custom binding.
+         */
+        ko.bindingHandlers.href = {
+            update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+                var path = valueAccessor();
+                var replaced = path.replace(/:([A-Za-z_]+)/g, function(_, token) {
+                    return ko.unwrap(viewModel[token]);
+                });
+                element.href = replaced;
+            }
+        };
 
+        /*
+         * Create a top level View class.
+         */
+        var View = function(title, templateName, data) {
+            this.title = title;
+            this.templateName = templateName;
+            this.data = data;
+        };
+
+        /*
+         * Create the top level View, containing our view classes.
+         */
+        var viewModel = {
+            views: ko.observableArray([
+                new View("RestaurantList",  "restaurant-list-template",   new RestaurantModule.RestaurantListView()),
+                new View("RestaurantView",  "restaurant-single-template", new RestaurantModule.RestaurantSingleView()),
+                new View("ReservationView", "reservation-template", new ReservationModule.ReservationView())
+            ]),
+            selectedView: ko.observable()
+        };
+
+        /*
+         * Build a small controller to change our view as requested.
+         */
+        var controller = (function() {
+            var channel = postal.channel();
+            var subscription = channel.subscribe( Router.topic, function ( data ) {
+                console.log("!!!");
+                if( data.route === Router.routes.MAIN ) {
+                    viewModel.selectedView(viewModel.views()[0]);
+                } else if( data.route === Router.routes.RESTAURANT ) {
+                    viewModel.selectedView(viewModel.views()[1]);
+                } else if ( data.route === Router.routes.RESERVATION) {
+                    viewModel.selectedView(viewModel.views()[2]);
+                }
+            } );
+        })();
+
+        // Start up knockout by binding the main object.
+        ko.applyBindings(viewModel);
+
+        // Finish by starting the router.
+        router.run();
     });
 
 })();

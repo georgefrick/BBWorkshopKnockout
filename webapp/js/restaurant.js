@@ -52,30 +52,56 @@
         };
     };
 
+
+
     /*
      * The main application object, holds the top level references and the Sammy
      * router.
      */
-    RestaurantModule.RestaurantView = function() {
+    RestaurantModule.RestaurantSingleView = function() {
         var self = this;
-        self.restaurants = ko.observableArray([]);
         self.chosenRestaurant = ko.observable();
         self.chosenTime = ko.observable();
         self.availableTimes = ko.observableArray([]);
         self.reservations = ko.observableArray([]);
-        Reservation.reservationForm.errors = ko.validation.group(Reservation.reservationForm);
-        self.reservationForm = ko.validatedObservable(Reservation.reservationForm);
-        self.confirmedReservation = ko.observable();
-        self.ajaxWaiting = ko.observable(false);
+        ReservationModule.reservationForm.errors = ko.validation.group(ReservationModule.reservationForm);
+        self.reservationForm = ko.validatedObservable(ReservationModule.reservationForm);
 
-        // A 'route' to choose a restaurant.
-        self.goToRestaurant = function(restaurant) {
-           location.hash = "restaurant/" + restaurant.id;
+        var channel = postal.channel();
+        var subscription = channel.subscribe( Router.topic, function ( data ) {
+            if( data.route === Router.routes.RESTAURANT ) {
+                self.showRestaurant(data.id);
+            } else {
+               // possibly clear data.
+            }
+        } );
+
+        /*
+         * the second variable is here to illustrate the purpose of having the router communicate via a bus.
+         * If the application wants to show a restaurant, it can pass the restaurant. If the user is entering
+         * the application via this route, the id can be used to load the restaurant; without having to load
+         * the entire list.
+         */
+        self.showRestaurant = function(id, restaurant) {
+            if( restaurant ) {
+                self.chosenRestaurant(restaurant);
+            } else {
+                $.getJSON("/restaurants/" + id, function(allData) {
+                    self.chosenRestaurant(new RestaurantModule.Restaurant(allData));
+                    console.log(allData.id);
+                });
+            }
+            $.getJSON('/restaurants/' + id + '/reservations', function(data) {
+                self.availableTimes(data.available);
+                self.reservations(data.reservations);
+            });
+            self.chosenTime(null);
         };
 
         // An 'event' to select a time and show the form. Selecting the
         // time causes it to be non-null which the form visibility is bound to.
         self.goToForm = function(time) {
+            console.log("Time Selected.");
             self.chosenTime(time);
         };
 
@@ -86,14 +112,8 @@
                 var data = ko.toJS(self.reservationForm); // toJSON returns a string.
                 data.time = self.chosenTime();
                 data.restaurantId = self.chosenRestaurant().id;
-                self.ajaxWaiting(true);
                 $.post("/reservations", data, function(response) {
                     console.log(response);
-                    self.restaurants(null);
-                    self.chosenRestaurant(null);
-                    self.chosenTime(null);
-                    self.availableTimes(null);
-                    self.ajaxWaiting(false);
                     location.hash = "reservation/" + response.id;
                 });
             } else {
@@ -105,60 +125,30 @@
 
         // @TODO This is not implemented.
         self.cancelForm = function(something) {
-            console.log("I got passed this: " + something);
+            location.hash = "/";
         };
 
-        /*
-         * This is where the application 'starts up', by retrieving the restaurant list.
-         */
-        $.getJSON("/restaurants", function(allData) {
-            var mappedRestaurants = $.map(allData, function(item) {
-                return new RestaurantModule.Restaurant(item)
-            });
-            self.restaurants(mappedRestaurants);
-        });
+    };
 
-        /*
-         * Start up the Sammy router.
-         */
-        $.sammy('body',function() {
-            // When you go to root, reset the vars.
-            this.get('/', function() {
-                self.chosenRestaurant(null);
-                self.chosenTime(null);
-                self.availableTimes(null);
-                self.reservations(null);
-            });
+    RestaurantModule.RestaurantListView = function() {
+        var self = this;
 
-            // Load a restaurant.
-            this.get('#restaurant/:restaurantId', function() {
+        self.restaurants = ko.observableArray([]);
 
-                $.getJSON("/restaurants/" + this.params.restaurantId, function(allData) {
-                    self.chosenRestaurant(new RestaurantModule.Restaurant(allData));
-                    console.log(allData.id);
-                });
-                $.getJSON('/restaurants/' + this.params.restaurantId + '/reservations', function(data) {
-                    self.availableTimes(data.available);
-                    self.reservations(data.reservations);
-                });
-                self.chosenTime(null);
-
-            });
-
-            // Load a reservation.
-            this.get('#reservation/:reservationId', function() {
-
-                $.getJSON("/reservations/" + this.params.reservationId, function(allData) {
-                    var basicData = allData;
-                    $.getJSON('/restaurants/' + basicData.restaurantId, function(data) {
-                        basicData.restaurantName = data.name;
-                        self.confirmedReservation(basicData);
+        var channel = postal.channel();
+        var subscription = channel.subscribe( Router.topic, function ( data ) {
+            if( data.route === Router.routes.MAIN ) {
+                $.getJSON("/restaurants", function(allData) {
+                    var mappedRestaurants = $.map(allData, function(item) {
+                        return new RestaurantModule.Restaurant(item)
                     });
+                    self.restaurants(mappedRestaurants);
                 });
+            } else {
+                // possibly clear restaurants, but no reason.
+            }
+        } );
 
-            });
-
-        }).run();
     };
 
     return RestaurantModule;
