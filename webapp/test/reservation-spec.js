@@ -21,87 +21,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-/**
- * @author jgitter
- */
+
 (function() {
     "use strict";
+    // Before starting up Knockout, configure the validator plugin.
+    ko.validation.rules.pattern.message = 'Invalid.';
 
-    module("Reservation Module");
+    ko.validation.configure({
+        registerExtenders: true,
+        messagesOnModified: true,
+        insertMessages: false,
+        parseInputAttributes: true,
+        messageTemplate: null,
+        decorateInputElement: false,
+        decorateElement: false,
+        errorElementClass: 'invalid'
+    });
 
-    var getReservation = function() {
-        return new Reservation.Model({
-            id: 'abc123',
-            restaurantId: 'zyx987',
-            name: 'Jerry Rice',
-            phone: '1-800-123-4567',
-            guests: 1,
-            time: new Date().getTime()
-        });
+    ReservationModule.reservationForm.errors = ko.validation.group(ReservationModule.reservationForm);
+    var tester = {
+      reservationForm : ReservationModule.reservationForm
     };
 
-    test("name-validation", function() {
-        expect(2);
-        
-        var reservation = getReservation();
-        ok(reservation.isValid(true), "Check valid model");
+ //   ko.applyBindings(tester);
 
-        reservation = getReservation();
-        reservation.set('name', 'A');
-        ok(reservation.isValid(true) === false, "Name is too short");
+    describe("A reservation form ", function() {
+        it("validates # of guests.", function() {
+            expect(tester.reservationForm.guests.isValid()).toBe(true); // defaults to 2.
+            tester.reservationForm.guests(null);
+            expect(tester.reservationForm.guests.isValid()).toBe(false);
+            tester.reservationForm.guests("2");
+            expect(tester.reservationForm.guests.isValid()).toBe(true);
+
+        });
+        it("validates name.", function() {
+            expect(tester.reservationForm.name.isValid()).toBe(false);
+            tester.reservationForm.name("John Doe");
+            expect(tester.reservationForm.name.isValid()).toBe(true);
+        });
+        it("validates phone.", function() {
+            expect(tester.reservationForm.phone.isValid()).toBe(false);
+            tester.reservationForm.phone("414-abcd");
+            expect(tester.reservationForm.phone.isValid()).toBe(false);
+            tester.reservationForm.phone("(414)555-5309");
+            expect(tester.reservationForm.phone.isValid()).toBe(true);
+        });
+        it("is fully validated.", function(){
+            expect(tester.reservationForm.isValid()).toBe(true);
+        });
     });
 
-    test("guests-validation", function() {
-        expect(4);
 
-        var reservation = getReservation();
-        reservation.set('guests', 0);
-        ok(reservation.isValid(true) === false, "Guests must be greater than or equal to 1");
-
-        reservation.set('guests', 1);
-        ok(reservation.isValid(true), "Guests must be greater than or equal to 1");
-
-        reservation.set('guests', 10);
-        ok(reservation.isValid(true), "Guests must be less than or equal to 10");
-
-        reservation.set('guests', 11);
-        ok(reservation.isValid(true) === false, "Guests must be less than or equal to 10");
-    });
-
-    test("time-validation", function() {
-        expect(1);
-
-        var reservation = getReservation();
-        reservation.unset('time');
-        ok(reservation.isValid(true) === false, "Time is required");
-    });
-
-    test("phone-validation", function() {
-        expect(8);
-
-        var reservation = getReservation();
-        reservation.set('phone', '123-123-1234');
-        ok(reservation.isValid(true), "Check valid phone number formats");
-
-        reservation.set('phone', '123-1234');
-        ok(reservation.isValid(true), "Check valid phone number formats");
-
-        reservation.set('phone', '(123) 123-1234');
-        ok(reservation.isValid(true), "Check valid phone number formats");
-
-        reservation.set('phone', '1 2 3 - 1 2 3 - 1 2 3 4');
-        ok(reservation.isValid(true), "Check valid phone number formats");
-
-        reservation.set('phone', '12-31234');
-        ok(reservation.isValid(true) === false, "Check invalid phone number formats");
-
-        reservation.set('phone', '123-123-234');
-        ok(reservation.isValid(true) === false, "Check invalid phone number formats");
-
-        reservation.set('phone', '2-123-123-1234');
-        ok(reservation.isValid(true) === false, "Check invalid phone number formats");
-
-        reservation.set('phone', '123-12-1234');
-        ok(reservation.isValid(true) === false, "Check invalid phone number formats");
-    });
 })();

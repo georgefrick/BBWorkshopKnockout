@@ -52,6 +52,7 @@
      */
     Router.router = Sammy('body',function() {
 
+        // Load the root context (restaurant list)
         this.get('/', function() {
             channel.publish( Router.topic, {
                 route : Router.routes.MAIN

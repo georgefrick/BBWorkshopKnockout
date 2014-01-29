@@ -21,15 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-/**
- * @author jgitter
- */
+
 (function() {
     "use strict";
 
-    module("Restaurant Module");
-    
-    test("temporary", function() {
-        ok(1===1);
+    function getRestaurant() {
+        return new RestaurantModule.Restaurant({
+            name : "test",
+            location: "somewhere",
+            price: "2",
+            tagline: "a cool place to test",
+            address: "2040 South Nowhere Pl.",
+            description: "A testing restaurant for running tests.",
+            rating: "75",
+            id: 5
+        });
+    }
+
+
+    describe("A Restaurant object ", function() {
+        it("formats price and rating correctly", function() {
+            var r = getRestaurant();
+            expect(r.fPrice()).toBe("$$");
+            expect(r.fRating()).toBe("****");
+        });
     });
+
+
 })();

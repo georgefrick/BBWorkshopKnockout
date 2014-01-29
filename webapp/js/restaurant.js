@@ -52,11 +52,32 @@
         };
     };
 
+    /*
+     * The very simple restaurant list, main view.
+     */
+    RestaurantModule.RestaurantListView = function() {
+        var self = this;
 
+        self.restaurants = ko.observableArray([]);
+
+        var channel = postal.channel();
+        var subscription = channel.subscribe( Router.topic, function ( data ) {
+            if( data.route === Router.routes.MAIN ) {
+                $.getJSON("/restaurants", function(allData) {
+                    var mappedRestaurants = $.map(allData, function(item) {
+                        return new RestaurantModule.Restaurant(item)
+                    });
+                    self.restaurants(mappedRestaurants);
+                });
+            } else {
+                // possibly clear restaurants, but no reason.
+            }
+        } );
+
+    };
 
     /*
-     * The main application object, holds the top level references and the Sammy
-     * router.
+     * Represent a single restaurant, including the times and form.
      */
     RestaurantModule.RestaurantSingleView = function() {
         var self = this;
@@ -71,8 +92,6 @@
         var subscription = channel.subscribe( Router.topic, function ( data ) {
             if( data.route === Router.routes.RESTAURANT ) {
                 self.showRestaurant(data.id);
-            } else {
-               // possibly clear data.
             }
         } );
 
@@ -101,7 +120,6 @@
         // An 'event' to select a time and show the form. Selecting the
         // time causes it to be non-null which the form visibility is bound to.
         self.goToForm = function(time) {
-            console.log("Time Selected.");
             self.chosenTime(time);
         };
 
@@ -113,7 +131,6 @@
                 data.time = self.chosenTime();
                 data.restaurantId = self.chosenRestaurant().id;
                 $.post("/reservations", data, function(response) {
-                    console.log(response);
                     location.hash = "reservation/" + response.id;
                 });
             } else {
@@ -123,31 +140,9 @@
             return false; // KO will html submit if you return true.
         };
 
-        // @TODO This is not implemented.
         self.cancelForm = function(something) {
             location.hash = "/";
         };
-
-    };
-
-    RestaurantModule.RestaurantListView = function() {
-        var self = this;
-
-        self.restaurants = ko.observableArray([]);
-
-        var channel = postal.channel();
-        var subscription = channel.subscribe( Router.topic, function ( data ) {
-            if( data.route === Router.routes.MAIN ) {
-                $.getJSON("/restaurants", function(allData) {
-                    var mappedRestaurants = $.map(allData, function(item) {
-                        return new RestaurantModule.Restaurant(item)
-                    });
-                    self.restaurants(mappedRestaurants);
-                });
-            } else {
-                // possibly clear restaurants, but no reason.
-            }
-        } );
 
     };
 

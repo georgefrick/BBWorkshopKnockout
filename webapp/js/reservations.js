@@ -28,6 +28,21 @@
     var ReservationModule = {};
     window.ReservationModule = ReservationModule;
 
+    ko.validation.rules['phone'] = {
+        validator: function (value) {
+
+            if (value !== undefined) {
+                var check = value.replace(/[\s\(\)]/g, '');
+                if (check.match(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/)) {
+                    return true;
+                }
+                return false;
+            }
+        },
+        message: "Must be a valid phone number."
+    };
+    ko.validation.registerExtenders();
+
     /*
      * A Knockout observable structure to represent the form and have
      * two way data binding.
@@ -37,20 +52,16 @@
         guests : ko.observable(2).extend({  required: true }),
         name : ko.observable().extend({ required: true, minLength: 2 }),
         phone : ko.observable().extend({  required: true,
-            validator: function (value) {
-                if (value !== undefined) {
-                    var check = value.replace(/[\s\(\)]/g, '');
-                    if (check.match(/^1?-?(\d{3})?-?\d{3}-?\d{4}$/) === null) {
-                        return false;
-                    }
-                }
-            }}),
+            phone: true}),
         email : ko.observable(),
         location : ko.observable(),
         isSpecialOccasion : ko.observable(),
         specialRequests : ko.observable()
     };
 
+    /*
+     * A simple view for viewing an existing reservation object.
+     */
     ReservationModule.ReservationView = function() {
         var self = this;
         self.confirmedReservation = ko.observable();
