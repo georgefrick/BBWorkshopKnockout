@@ -43,8 +43,6 @@
       reservationForm : ReservationModule.reservationForm
     };
 
- //   ko.applyBindings(tester);
-
     describe("A reservation form ", function() {
         it("validates # of guests.", function() {
             expect(tester.reservationForm.guests.isValid()).toBe(true); // defaults to 2.
@@ -70,6 +68,5 @@
             expect(tester.reservationForm.isValid()).toBe(true);
         });
     });
-
 
 })();

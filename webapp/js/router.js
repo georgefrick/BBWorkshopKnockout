@@ -48,7 +48,7 @@
     Router.routes = routes;
 
     /*
-     * These routed represent application state, so it can be returned to or changed.
+     * These routes represent application state, so it can be returned to or changed.
      */
     Router.router = Sammy('body',function() {
 
